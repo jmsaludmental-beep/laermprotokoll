@@ -131,7 +131,7 @@ const renderPersonalReports = (items) => {
           <p class="desc">${escapeHtml(item.description)}</p>
         </div>
         ${media}
-        <button class="btn-edit-trigger" onclick="handleEditEntry('${item.id}')">Bearbeiten</button>
+        <button class="btn-edit-pencil" title="Bearbeiten" onclick="handleEditEntry('${item.id}')">✎</button>
       </div>
     `;
     })
