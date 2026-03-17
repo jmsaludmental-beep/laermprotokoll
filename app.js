@@ -101,44 +101,6 @@ const renderEntries = (items) => {
     .join("");
 };
 
-const renderPersonalReports = (items) => {
-  if (!items.length) {
-    listaResultados.innerHTML =
-      "<p class='helper'>Keine Berichte unter dieser E-Mail-Adresse gefunden.</p>";
-    return;
-  }
-
-  listaResultados.innerHTML = `
-    <h3>Ihr habt ${items.length} Belege gemeldet:</h3>
-    <p class="helper" style="margin-bottom: 20px; color: var(--accent); font-weight: 600;">
-      💡 Tipp: Drückt Strg+P (oder Teilen > Drucken am Handy), um diese Liste als PDF für euren Vermieter zu speichern.
-    </p>
-  `;
-  listaResultados.innerHTML += items
-    .map((item) => {
-      const fecha = formatDateTime(item.created_at);
-      const address = item.full_address
-        ? `<div class="address"><strong>Anschrift:</strong> ${escapeHtml(item.full_address)}</div>`
-        : "";
-      const media = item.file_url
-        ? `<a href="${item.file_url}" target="_blank" rel="noopener" class="footer__link">Datei ansehen ↗</a>`
-        : "";
-
-      return `
-      <div class="result-card" data-card-id="${item.id}">
-        <div class="meta">${fecha}</div>
-        <h4>${escapeHtml(item.noise_type || "Baulärm")}</h4>
-        <div class="entry__meta" style="margin-bottom: 8px;">👤 ${escapeHtml(item.neighbor || "Nachbar:in")}</div>
-        ${address}
-        <div class="desc-container">
-          <p class="desc">${escapeHtml(item.description)}</p>
-        </div>
-        ${media}
-      </div>
-    `;
-    })
-    .join("");
-};
 
 window.handleEditEntry = (id) => {
   const card = document.querySelector(`[data-card-id="${id}"]`);
@@ -335,31 +297,24 @@ const enviarEnlaceMagico = async () => {
 };
 
 const consultarMisReportes = async (email) => {
-  if (!listaResultados) return;
-  listaResultados.innerHTML = "<p class='helper'>Deine Berichte werden geladen...</p>";
-  
   try {
     const { data, error } = await client
       .from("entries")
-      .select("*")
-      .eq("email", email)
-      .order("created_at", { ascending: false });
+      .select("id")
+      .eq("email", email);
 
     if (error) throw error;
 
-    // Populate userOwnedIds set
+    // Populate userOwnedIds set for editing on the public board
     userOwnedIds.clear();
     if (data) {
       data.forEach(item => userOwnedIds.add(item.id));
     }
 
-    renderPersonalReports(data || []);
     // Re-render public feed to show edit buttons
     renderEntries(cachedEntries);
   } catch (error) {
-    console.error(error);
-    listaResultados.innerHTML =
-      "<p class='helper error'>Fehler beim Laden deiner Berichte.</p>";
+    console.error("Error fetching user reports:", error);
   }
 };
 

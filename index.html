@@ -152,14 +152,14 @@
     </section>
 
     <!-- Mein persönliches Protokoll -->
-    <section class="personal-protocol">
+    <section class="personal-protocol" id="anmeldung">
       <div class="personal-protocol__content">
-        <h2>Mein persönliches Protokoll</h2>
+        <h2>Mein Zugang</h2>
         <div id="protocol-loading" class="helper" style="display: none">Lädt...</div>
 
         <!-- Login Section -->
         <div id="protocol-login">
-          <p>Fordert einen Zugangslink an, um eure Belege als PDF zu speichern. Eure sensiblen Daten (Adresse/Email) sind nur hier für euch sichtbar; auf dem öffentlichen Board bleiben alle Meldungen anonym.</p>
+          <p>Fordert einen Zugangslink an, um eure eigenen Belege direkt auf dem Board bearbeiten zu können.</p>
           <div class="search-box">
             <input type="email" id="email-consulta" placeholder="marta@email.com" />
             <button type="button" id="btn-magic-link" class="primary">Zugangslink anfordern</button>
@@ -169,11 +169,10 @@
 
         <!-- Authenticated Section -->
         <div id="protocol-authenticated" style="display: none">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
             <p id="user-greeting" style="margin: 0; font-weight: 600;"></p>
             <button type="button" id="btn-logout" class="secondary" style="padding: 8px 16px; font-size: 0.8rem;">Abmelden</button>
           </div>
-          <div id="lista-resultados" class="search-results"></div>
         </div>
       </div>
     </section>
