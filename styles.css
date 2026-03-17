@@ -197,6 +197,22 @@ select {
   box-shadow: 0 10px 24px rgba(31, 26, 23, 0.08);
 }
 
+.report-button {
+  justify-self: start;
+  border: 1px solid var(--stroke);
+  background: #fff7f0;
+  color: var(--muted);
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.report-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .entry__meta {
   font-size: 0.85rem;
   color: var(--muted);

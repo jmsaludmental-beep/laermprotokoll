@@ -63,7 +63,7 @@ const renderEntries = (items) => {
           ? `<p class="entry__meta">Zeitpunkt: ${formatEventDateTime(item)}</p>`
           : "";
       return `
-      <article class="entry">
+      <article class="entry" data-entry-id="${item.id}">
         <div>
           <h3>${escapeHtml(item.neighbor)}</h3>
           <p class="entry__meta">${formatDateTime(item.created_at)}</p>
@@ -72,6 +72,9 @@ const renderEntries = (items) => {
         ${eventLine}
         <p>${escapeHtml(item.description)}</p>
         ${media}
+        <button class="report-button" type="button" data-report-id="${item.id}">
+          Inhalt melden
+        </button>
       </article>
     `;
     })
@@ -106,6 +109,7 @@ const loadEntries = async () => {
   const { data, error } = await client
     .from("entries")
     .select("*")
+    .eq("hidden", false)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -296,6 +300,34 @@ searchInput.addEventListener("input", (event) => {
     );
   });
   renderEntries(filtered);
+});
+
+entriesEl.addEventListener("click", async (event) => {
+  const button = event.target.closest(".report-button");
+  if (!button) return;
+
+  const entryId = button.dataset.reportId;
+  if (!entryId) return;
+
+  button.disabled = true;
+  button.textContent = "Gemeldet";
+
+  const { data, error } = await client.rpc("report_entry", {
+    entry_id: entryId,
+  });
+
+  if (error) {
+    button.disabled = false;
+    button.textContent = "Inhalt melden";
+    console.error(error);
+    return;
+  }
+
+  const result = Array.isArray(data) ? data[0] : data;
+  if (result && result.hidden) {
+    const card = button.closest(".entry");
+    if (card) card.remove();
+  }
 });
 
 initUploadWidget();
