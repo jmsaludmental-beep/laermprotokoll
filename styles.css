@@ -380,6 +380,8 @@ select:focus {
   display: flex;
   align-items: center;
   gap: 6px;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .entry__media {
@@ -431,6 +433,7 @@ select:focus {
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
+  line-height: 1.2;
 }
 
 .report-link:hover {
