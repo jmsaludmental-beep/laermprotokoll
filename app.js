@@ -35,6 +35,7 @@ const modalClose = document.querySelector(".modal-close");
 // ─── State & Config ───────────────────────────────────────────────────────────
 let cachedEntries = [];
 let uploadedAsset = null;
+let currentUserEmail = null;
 const MAX_VIDEO_MB = 100;
 const MAX_IMAGE_MB = 10;
 const MAX_AUDIO_MB = 60;
@@ -70,21 +71,28 @@ const renderEntries = (items) => {
         ? `<span class="entry__badge">${escapeHtml(item.noise_type)}</span>`
         : "";
 
-      const publicName =
-        item.neighbor || "Anonyme:r Nachbar:in";
+      const isOwner = currentUserEmail && item.email === currentUserEmail;
+      const editButton = isOwner 
+        ? `<button class="btn-edit-trigger" style="margin-top: 12px;" onclick="handleEditEntry('${item.id}')">Bearbeiten</button>` 
+        : "";
 
       return `
-      <article class="entry" data-entry-id="${item.id}">
+      <article class="entry" data-entry-id="${item.id}" data-card-id="${item.id}">
         <div class="entry__header">
           ${noiseBadge}
         </div>
         <h3 class="entry__title">${escapeHtml(cardTitle)}</h3>
         ${media}
-        <p class="entry__description">${escapeHtml(item.description)}</p>
+        <div class="desc-container">
+          <p class="desc">${escapeHtml(item.description)}</p>
+        </div>
         <p class="entry__meta">👤 ${escapeHtml(publicName)}</p>
-        <button class="report-button" type="button" data-report-id="${item.id}">
-          Inhalt melden
-        </button>
+        <div class="entry__actions" style="display: flex; gap: 8px; align-items: center;">
+          <button class="report-button" type="button" data-report-id="${item.id}" style="margin: 0;">
+            Inhalt melden
+          </button>
+          ${editButton}
+        </div>
       </article>
     `;
     })
@@ -132,12 +140,15 @@ const renderPersonalReports = (items) => {
 };
 
 window.handleEditEntry = (id) => {
-  const card = document.querySelector(`.result-card[data-card-id="${id}"]`);
+  const card = document.querySelector(`[data-card-id="${id}"]`);
   if (!card) return;
 
   const descP = card.querySelector(".desc");
   const container = card.querySelector(".desc-container");
   const currentText = descP.textContent;
+
+  const triggerBtn = card.querySelector(".btn-edit-trigger");
+  const reportBtn = card.querySelector(".report-button");
 
   container.innerHTML = `
     <textarea class="edit-area">${currentText}</textarea>
@@ -147,20 +158,25 @@ window.handleEditEntry = (id) => {
     </div>
   `;
   
-  card.querySelector(".btn-edit-trigger").style.display = "none";
+  if (triggerBtn) triggerBtn.style.display = "none";
+  if (reportBtn) reportBtn.style.display = "none";
 };
 
 window.cancelEdit = (id, originalText) => {
-  const card = document.querySelector(`.result-card[data-card-id="${id}"]`);
+  const card = document.querySelector(`[data-card-id="${id}"]`);
   if (!card) return;
   
   const container = card.querySelector(".desc-container");
   container.innerHTML = `<p class="desc">${originalText}</p>`;
-  card.querySelector(".btn-edit-trigger").style.display = "block";
+  
+  const triggerBtn = card.querySelector(".btn-edit-trigger");
+  const reportBtn = card.querySelector(".report-button");
+  if (triggerBtn) triggerBtn.style.display = "block";
+  if (reportBtn) reportBtn.style.display = "block";
 };
 
 window.saveEntryEdit = async (id) => {
-  const card = document.querySelector(`.result-card[data-card-id="${id}"]`);
+  const card = document.querySelector(`[data-card-id="${id}"]`);
   if (!card) return;
 
   const textarea = card.querySelector(".edit-area");
@@ -172,8 +188,10 @@ window.saveEntryEdit = async (id) => {
   }
 
   const btnSave = card.querySelector(".edit-actions .primary");
-  btnSave.disabled = true;
-  btnSave.textContent = "Speichert...";
+  if (btnSave) {
+    btnSave.disabled = true;
+    btnSave.textContent = "Speichert...";
+  }
 
   try {
     const { error } = await client
@@ -183,18 +201,29 @@ window.saveEntryEdit = async (id) => {
 
     if (error) throw error;
 
-    // Update UI
-    const container = card.querySelector(".desc-container");
-    container.innerHTML = `<p class="desc">${escapeHtml(newText)}</p>`;
-    card.querySelector(".btn-edit-trigger").style.display = "block";
+    // Update UI in all locations (Public Feed & Personal)
+    const allMatchingContainers = document.querySelectorAll(`[data-card-id="${id}"] .desc-container`);
+    allMatchingContainers.forEach(container => {
+      container.innerHTML = `<p class="desc">${escapeHtml(newText)}</p>`;
+    });
+
+    const allMatchingTriggers = document.querySelectorAll(`[data-card-id="${id}"] .btn-edit-trigger`);
+    allMatchingTriggers.forEach(btn => btn.style.display = "block");
+
+    const allMatchingReportBtns = document.querySelectorAll(`[data-card-id="${id}"] .report-button`);
+    allMatchingReportBtns.forEach(btn => btn.style.display = "block");
     
-    // Also refresh public feed to show changes
-    loadEntries();
+    // Refresh cached entries to keep state for subsequent renders
+    const item = cachedEntries.find(e => e.id === id);
+    if (item) item.description = newText;
+
   } catch (err) {
     console.error(err);
     alert("Fehler beim Speichern. Bitte versuche es erneut.");
-    btnSave.disabled = false;
-    btnSave.textContent = "Speichern";
+    if (btnSave) {
+      btnSave.disabled = false;
+      btnSave.textContent = "Speichern";
+    }
   }
 };
 
@@ -225,7 +254,7 @@ const loadEntries = async () => {
 
   const { data, error } = await client
     .from("public_entries")
-    .select("id, created_at, description, noise_type, event_date, event_time, file_url, file_type, neighbor")
+    .select("id, created_at, description, noise_type, event_date, event_time, file_url, file_type, neighbor, email")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -243,14 +272,20 @@ const loadEntries = async () => {
 
 const toggleProtocolStates = (session) => {
   if (session) {
+    currentUserEmail = session.user.email;
     if (protocolLogin) protocolLogin.style.display = "none";
     if (protocolAuthenticated) protocolAuthenticated.style.display = "block";
     if (userGreeting) userGreeting.textContent = `Angemeldet als: ${session.user.email}`;
     consultarMisReportes(session.user.email);
+    // Refresh public feed to show edit buttons if post matches current user
+    renderEntries(cachedEntries);
   } else {
+    currentUserEmail = null;
     if (protocolLogin) protocolLogin.style.display = "block";
     if (protocolAuthenticated) protocolAuthenticated.style.display = "none";
     if (listaResultados) listaResultados.innerHTML = "";
+    // Refresh public feed to hide edit buttons
+    renderEntries(cachedEntries);
   }
 };
 
