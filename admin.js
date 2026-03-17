@@ -93,7 +93,12 @@ const renderEntries = (items) => {
         ${noiseLine}
         ${renderMedia(item)}
         <p>${escapeHtml(item.description)}</p>
-        <p class="entry__meta">Gemeldet von: ${escapeHtml(item.neighbor || "Anonyme:r Nachbar:in")}</p>
+        <p class="entry__meta">Gemeldet von: ${escapeHtml(item.display_name || item.neighbor || "Anonyme:r Nachbar:in")}</p>
+        ${
+          item.full_address
+            ? `<p class="entry__meta">Adresse (privat): ${escapeHtml(item.full_address)}</p>`
+            : ""
+        }
         <div class="entry__actions">
           <button class="report-button" type="button" data-toggle-id="${item.id}">
             ${toggleLabel}
@@ -191,7 +196,7 @@ adminSearch.addEventListener("input", (event) => {
   const value = event.target.value.toLowerCase();
   const filtered = cachedEntries.filter((entry) => {
     return (
-      (entry.neighbor || "").toLowerCase().includes(value) ||
+      (entry.display_name || entry.neighbor || "").toLowerCase().includes(value) ||
       (entry.description || "").toLowerCase().includes(value)
     );
   });

@@ -12,7 +12,9 @@ Cloudinary-Upload-Widget (Dateispeicher).
 ```sql
 create table if not exists public.entries (
   id uuid primary key default gen_random_uuid(),
-  neighbor text not null,
+  display_name text not null,
+  full_address text,
+  neighbor text,
   email text,
   description text not null,
   noise_type text,
@@ -38,11 +40,35 @@ Falls die Tabelle bereits existiert, nur diese Spalten ergänzen:
 
 ```sql
 alter table public.entries
+  add column if not exists display_name text,
+  add column if not exists full_address text,
   add column if not exists noise_type text,
   add column if not exists event_date date,
   add column if not exists event_time time,
   add column if not exists reported_count integer default 0,
   add column if not exists hidden boolean default false;
+```
+
+Öffentliche View (ohne private Felder) und Zugriffsrechte:
+
+```sql
+create or replace view public.public_entries as
+select
+  id,
+  display_name,
+  description,
+  noise_type,
+  event_date,
+  event_time,
+  file_url,
+  file_type,
+  created_at,
+  reported_count,
+  hidden
+from public.entries;
+
+revoke select on table public.entries from anon;
+grant select on table public.public_entries to anon, authenticated;
 ```
 
 Report-Function (blendet Einträge nach 3 Meldungen aus):
@@ -81,14 +107,9 @@ grant execute on function public.report_entry(uuid) to anon, authenticated;
 2. RLS-Policies anpassen (damit Admin alles sehen und ausblenden kann):
 
 ```sql
-drop policy if exists "public read" on public.entries;
-drop policy if exists "public read visible" on public.entries;
 drop policy if exists "public insert" on public.entries;
 drop policy if exists "admin select all" on public.entries;
 drop policy if exists "admin update" on public.entries;
-
-create policy "public read visible" on public.entries
-for select using (hidden = false);
 
 create policy "public insert" on public.entries
 for insert with check (true);

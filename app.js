@@ -63,7 +63,9 @@ const renderEntries = (items) => {
         item.event_date || item.event_time
           ? `<p class="entry__meta">Zeitpunkt: ${formatEventDateTime(item)}</p>`
           : "";
-      const neighborLine = `<p class="entry__meta">Gemeldet von: ${escapeHtml(item.neighbor || "Anonyme:r Nachbar:in")}</p>`;
+      const publicName =
+        item.display_name || item.neighbor || "Anonyme:r Nachbar:in";
+      const neighborLine = `<p class="entry__meta">Gemeldet von: ${escapeHtml(publicName)}</p>`;
       return `
       <article class="entry" data-entry-id="${item.id}">
         ${eventLine}
@@ -110,7 +112,7 @@ const escapeHtml = (value) =>
 
 const loadEntries = async () => {
   const { data, error } = await client
-    .from("entries")
+    .from("public_entries")
     .select("*")
     .eq("hidden", false)
     .order("created_at", { ascending: false });
@@ -246,14 +248,15 @@ form.addEventListener("submit", async (event) => {
   statusEl.textContent = "Eintrag wird gespeichert...";
 
   const formData = new FormData(form);
-  const neighbor = formData.get("neighbor").trim() || "Anonym";
+  const displayName = formData.get("display_name").trim();
+  const fullAddress = formData.get("full_address").trim();
   const email = formData.get("email").trim();
   const description = formData.get("description").trim();
   const noiseType = formData.get("noise_type").trim();
   const eventDate = formData.get("event_date");
   const eventTime = formData.get("event_time");
-  if (!description || !eventDate || !eventTime) {
-    statusEl.textContent = "Bitte eine Beschreibung, Datum und Uhrzeit eingeben.";
+  if (!displayName || !description) {
+    statusEl.textContent = "Bitte die Pflichtfelder ausfüllen.";
     statusEl.className = "helper error";
     return;
   }
@@ -271,7 +274,8 @@ form.addEventListener("submit", async (event) => {
 
     const { error } = await client.from("entries").insert([
       {
-        neighbor,
+        display_name: displayName,
+        full_address: fullAddress || null,
         email,
         description,
         noise_type: noiseType || null,

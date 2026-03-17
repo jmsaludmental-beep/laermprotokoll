@@ -69,20 +69,39 @@
           <!-- 3. Tiempo -->
           <div class="form__row">
             <div class="form-group">
-              <label for="event_date">Datum</label>
-              <input type="date" id="event_date" name="event_date" required />
+              <label for="event_date">Datum (optional)</label>
+              <input type="date" id="event_date" name="event_date" />
             </div>
             <div class="form-group">
-              <label for="event_time">Uhrzeit</label>
-              <input type="time" id="event_time" name="event_time" required />
+              <label for="event_time">Uhrzeit (optional)</label>
+              <input type="time" id="event_time" name="event_time" />
             </div>
           </div>
 
           <!-- 4. Identidad -->
           <div class="form-group">
-            <label for="neighbor">Nachbar:in</label>
-            <input type="text" id="neighbor" name="neighbor" placeholder="z. B. Marta G. oder M. Müller" />
-            <p class="helper">Wichtig: Für volle rechtliche Gültigkeit ist der echte Name oft nötig.</p>
+            <label for="display_name">Öffentlicher Name (Pseudonym oder Kennung)</label>
+            <input
+              type="text"
+              id="display_name"
+              name="display_name"
+              placeholder="z. B. 3. OG · Marta"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="full_address">Vollständige Anschrift (nicht öffentlich)</label>
+            <input
+              type="text"
+              id="full_address"
+              name="full_address"
+              placeholder="Straße, Hausnr., PLZ, Ort, Etage"
+            />
+            <p class="helper">
+              Deine Adresse wird nicht öffentlich angezeigt. Sie dient nur der rechtlichen
+              Gültigkeit deines persönlichen Protokolls.
+            </p>
           </div>
 
           <div class="form-group">
@@ -143,13 +162,15 @@
           öffentlich, damit die Nachbarschaft sie im Lärmprotokoll nutzen kann.
         </p>
       </div>
-      <div>
-        <h3>Zeugen & Beweiswert</h3>
-        <p>
-          Anonyme Meldungen sind möglich, haben aber vor Gericht geringeren Wert.
-          Für eine festsitzende Mietminderung sind Zeugen mit Namen oft notwendig.
-        </p>
-      </div>
+        <div>
+          <h3>Anonymität & Beweiskraft</h3>
+          <p>
+            Für die öffentliche Anzeige kannst du ein Pseudonym verwenden.
+            Wichtig: Für eine Mietminderung oder rechtliche Schritte müssen gegenüber
+            Vermieter oder Behörden der volle Name und die vollständige Anschrift
+            (Straße, Hausnummer, Etage) angegeben werden.
+          </p>
+        </div>
       <div>
         <h3>Datenschutz</h3>
         <p>
