@@ -144,11 +144,10 @@ const showLoadingState = () => {
 const loadEntries = async () => {
   showLoadingState();
 
-  // Security: Only select public fields for the main board
+  // Security: Only select public fields for the main board. No email or full_address here.
   const { data, error } = await client
     .from("public_entries")
-    .select("id, created_at, description, noise_type, event_date, event_time, file_url, file_type, display_name, neighbor, hidden")
-    .eq("hidden", false)
+    .select("id, created_at, description, noise_type, event_date, event_time, file_url, file_type, display_name")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -349,7 +348,7 @@ form.addEventListener("submit", async (event) => {
   const eventDate = formData.get("event_date");
   const eventTime = formData.get("event_time");
 
-  if (!displayName || !description) {
+  if (!displayName || !description || !email) {
     statusEl.textContent = "Bitte die Pflichtfelder ausfüllen.";
     statusEl.className = "helper error";
     return;
