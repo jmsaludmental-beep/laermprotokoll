@@ -786,9 +786,56 @@ select:focus {
   }
 }
 
+/* ─── Top Admin/Home Link ─────────────────────────────────────────────────── */
+.admin-link-top {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: white;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-link-top:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.admin-link-top--home {
+  color: var(--accent);
+  border-color: var(--accent-soft);
+  background: var(--accent-soft);
+}
+
+.admin-link-top--home:hover {
+  background: white;
+}
+
+@media (max-width: 768px) {
+  .admin-link-top {
+    top: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+}
+
 /* ─── Print styles ─────────────────────────────────────────────────────────── */
 @media print {
-  header, footer, .hero, .board, .info, .search-box, button, .report-button, .cookie-banner {
+  header, footer, .hero, .board, .info, .search-box, button, .report-button, .cookie-banner, .admin-link-top {
     display: none !important;
   }
   body { background: white; color: black; margin: 0; padding: 0; }
