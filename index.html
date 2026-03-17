@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lärmprotokoll Hamburg · Registro de Ruido</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <div class="hero__content">
+          <p class="tag">Lärmprotokoll · Hamburgo</p>
+          <h1>Registro comunitario de ruido de obra</h1>
+          <p class="subtitle">
+            Subimos evidencias (video, foto o audio) para documentar el impacto en
+            500 viviendas y respaldar la solicitud de reducción del alquiler.
+          </p>
+          <div class="hero__chips">
+            <span>Transparente</span>
+            <span>Participativo</span>
+            <span>Ordenado por fecha</span>
+          </div>
+        </div>
+        <div class="hero__panel">
+          <h2>Subir evidencia</h2>
+          <form id="uploadForm" class="form">
+            <label>
+              Vecino/a (nombre o identificador)
+              <input type="text" name="neighbor" required placeholder="Ej: Piso 3B · Marta" />
+            </label>
+            <label>
+              Email (opcional)
+              <input type="email" name="email" placeholder="marta@email.com" />
+            </label>
+            <label>
+              Descripción breve
+              <textarea
+                name="description"
+                rows="3"
+                required
+                placeholder="Ej: Martillazos constantes, vibraciones fuertes."
+              ></textarea>
+            </label>
+            <label>
+              Archivo (video, foto o audio)
+              <input type="file" name="media" accept="video/*,image/*,audio/*" required />
+            </label>
+            <label class="inline">
+              <input type="checkbox" name="consent" required />
+              Confirmo que este material es real y corresponde a la obra.
+            </label>
+            <button type="submit" class="primary">Subir</button>
+            <p class="helper" id="uploadStatus"></p>
+          </form>
+        </div>
+      </header>
+
+      <section class="board">
+        <div class="board__header">
+          <div>
+            <h2>Evidencias recientes</h2>
+            <p>Ordenadas por fecha y hora de subida.</p>
+          </div>
+          <div class="filters">
+            <input id="searchInput" type="search" placeholder="Buscar por vecino o descripción" />
+          </div>
+        </div>
+
+        <div id="entries" class="entries"></div>
+      </section>
+
+      <section class="info">
+        <div>
+          <h3>¿Cómo se usa esto?</h3>
+          <p>
+            Cada subida registra automáticamente la fecha y hora local. El material se
+            mantiene público para que la comunidad pueda consultarlo y usarlo en el
+            Lärmprotokoll.
+          </p>
+        </div>
+        <div>
+          <h3>Privacidad</h3>
+          <p>
+            Evita capturar rostros de terceros. Si necesitas anonimizar, usa un
+            identificador en vez de nombre completo.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Creado por la comunidad · Hamburgo</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
