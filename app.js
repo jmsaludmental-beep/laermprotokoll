@@ -35,7 +35,25 @@ const MAX_IMAGE_MB = 10;
 const MAX_AUDIO_MB = 60;
 const MAX_VIDEO_SECONDS = 30;
 
-// ─── Render Functions ──────────────────────────────────────────────────────────
+const AUDIO_FORMATS = new Set(["mp3", "m4a", "wav", "ogg", "aac", "flac"]);
+
+const formatDateTime = (value) => {
+  const date = new Date(value);
+  return date.toLocaleString("de-DE", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+};
+
+const escapeHtml = (value) => {
+  if (!value) return "";
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+};
 
 const renderEntries = (items) => {
   if (!items.length) {
@@ -147,9 +165,8 @@ const showLoadingState = () => {
 const loadEntries = async () => {
   showLoadingState();
 
-  // Security: Only select public fields for the main board. No email or full_address here.
   const { data, error } = await client
-    .from("entries") // Fix: Select from base table first to ensure functionality
+    .from("public_entries")
     .select("id, created_at, description, noise_type, event_date, event_time, file_url, file_type, neighbor")
     .order("created_at", { ascending: false });
 
@@ -243,6 +260,22 @@ const logout = async () => {
 };
 
 // ─── Upload Widget logic ──────────────────────────────────────────────────────
+
+const renderMedia = (item) => {
+  const url = item.file_url;
+  const type = item.file_type || "";
+
+  if (type.startsWith("image/")) {
+    return `<div class="entry__media"><img src="${url}" alt="Hochgeladener Beleg" loading="lazy" /></div>`;
+  }
+  if (type.startsWith("video/")) {
+    return `<div class="entry__media"><video src="${url}" controls></video></div>`;
+  }
+  if (type.startsWith("audio/")) {
+    return `<div class="entry__media"><audio src="${url}" controls></audio></div>`;
+  }
+  return `<a href="${url}" target="_blank" rel="noopener">Datei ansehen</a>`;
+};
 
 const getFileType = (resourceType, format) => {
   if (resourceType === "image") return `image/${format}`;

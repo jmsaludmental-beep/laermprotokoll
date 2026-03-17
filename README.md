@@ -1,157 +1,29 @@
 # Lärmprotokoll Hamburg (öffentliche Website)
 
-Statische Seite mit Upload von Videos/Fotos/Audio und öffentlicher Liste nach Datum.
-Funktioniert mit dem Gratis-Plan von Supabase (Datenbank) und dem kostenlosen
-Cloudinary-Upload-Widget (Dateispeicher).
+Statische Seite mit Upload von Videos/Fotos/Audio y gestión profesional de reportes.
 
-## 1) Gratis-Projekt in Supabase anlegen
+Funciona con:
+- **Supabase**: Base de datos, Autenticación (Magic Link) y RLS.
+- **Cloudinary**: Alojamiento de medios (unsigned upload).
+- **GitHub Pages**: Hosting estático.
 
-1. Ein Projekt in Supabase anlegen (Free-Plan).
-2. Im **SQL Editor** ausführen:
+## Configuración de Supabase
 
-```sql
-create table if not exists public.entries (
-  id uuid primary key default gen_random_uuid(),
-  display_name text not null,
-  full_address text,
-  neighbor text,
-  email text,
-  description text not null,
-  noise_type text,
-  event_date date,
-  event_time time,
-  reported_count integer default 0,
-  hidden boolean default false,
-  file_url text not null,
-  file_type text,
-  created_at timestamptz default now()
-);
+1. Crea una tabla `entries` con las columnas: `neighbor`, `email`, `full_address`, `description`, `noise_type`, `event_date`, `event_time`, `file_url`, `file_type`.
+2. Crea una vista pública `public_entries` para ocultar datos sensibles:
+   ```sql
+   CREATE VIEW public_entries AS
+   SELECT id, created_at, description, noise_type, event_date, event_time, file_url, file_type, neighbor
+   FROM entries;
+   ```
+3. Configura las políticas RLS para proteger la privacidad de los vecinos.
 
-alter table public.entries enable row level security;
+## Instalación Local
 
-create policy "public read" on public.entries
-for select using (true);
+1. Clona el repositorio.
+2. Abre `app.js` y `admin.js` y añade tus credenciales de Supabase y Cloudinary.
+3. Abre `index.html` en tu navegador (o usa un servidor local).
 
-create policy "public insert" on public.entries
-for insert with check (true);
-```
+## Despliegue
 
-Falls die Tabelle bereits existiert, nur diese Spalten ergänzen:
-
-```sql
-alter table public.entries
-  add column if not exists display_name text,
-  add column if not exists full_address text,
-  add column if not exists noise_type text,
-  add column if not exists event_date date,
-  add column if not exists event_time time,
-  add column if not exists reported_count integer default 0,
-  add column if not exists hidden boolean default false;
-```
-
-Öffentliche View (ohne private Felder) und Zugriffsrechte:
-
-```sql
-create or replace view public.public_entries as
-select
-  id,
-  display_name,
-  description,
-  noise_type,
-  event_date,
-  event_time,
-  file_url,
-  file_type,
-  created_at,
-  reported_count,
-  hidden
-from public.entries;
-
-revoke select on table public.entries from anon;
-grant select on table public.public_entries to anon, authenticated;
-```
-
-Report-Function (blendet Einträge nach 3 Meldungen aus):
-
-```sql
-create or replace function public.report_entry(entry_id uuid)
-returns table(reported_count integer, hidden boolean)
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare new_count integer;
-declare new_hidden boolean;
-begin
-  update public.entries
-  set reported_count = coalesce(reported_count, 0) + 1,
-      hidden = case
-        when coalesce(reported_count, 0) + 1 >= 3 then true
-        else hidden
-      end
-  where id = entry_id
-  returning reported_count, hidden into new_count, new_hidden;
-
-  return query select new_count, new_hidden;
-end;
-$$;
-
-grant execute on function public.report_entry(uuid) to anon, authenticated;
-```
-
-## Admin-Login (Moderation)
-
-1. In Supabase → **Authentication → Users** einen Benutzer anlegen:
-   - E-Mail: `sternbruecke.laerm@gmail.com`
-   - Passwort setzen
-2. RLS-Policies anpassen (damit Admin alles sehen und ausblenden kann):
-
-```sql
-drop policy if exists "public insert" on public.entries;
-drop policy if exists "admin select all" on public.entries;
-drop policy if exists "admin update" on public.entries;
-
-create policy "public insert" on public.entries
-for insert with check (true);
-
-create policy "admin select all" on public.entries
-for select to authenticated
-using ((auth.jwt() ->> 'email') = 'sternbruecke.laerm@gmail.com');
-
-create policy "admin update" on public.entries
-for update to authenticated
-using ((auth.jwt() ->> 'email') = 'sternbruecke.laerm@gmail.com')
-with check ((auth.jwt() ->> 'email') = 'sternbruecke.laerm@gmail.com');
-```
-
-3. Admin-Seite: `admin.html`
-
-## 2) Cloudinary einrichten
-
-1. Cloudinary-Konto erstellen.
-2. Einen **unsigned Upload Preset** anlegen.
-3. Im Preset Dateitypen und Größenlimits setzen.
-4. Optional: Eingehende Video-Transformationen konfigurieren, um die Dateigröße zu senken.
-
-## 3) Schlüssel in `app.js` eintragen
-
-In `app.js` ersetzen:
-
-- `YOUR_SUPABASE_URL`
-- `YOUR_SUPABASE_ANON_KEY`
-- `YOUR_CLOUDINARY_CLOUD_NAME`
-- `YOUR_UNSIGNED_PRESET`
-
-Zu finden unter **Project Settings → API**.
-
-## 4) Kostenlos veröffentlichen
-
-Einfache Optionen:
-
-1. GitHub Pages: Dateien ins Repo hochladen und Pages aktivieren.
-2. Netlify: Projektordner hochladen und in Minuten veröffentlichen.
-
-## Datenschutzhinweise
-
-Bitte keine Gesichter Dritter aufnehmen. Nutze bei Bedarf Kennungen statt
-vollständiger Namen.
+Sube los cambios a la rama `main` y activa GitHub Pages en la configuración del repositorio.
