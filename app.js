@@ -35,25 +35,8 @@ const MAX_IMAGE_MB = 10;
 const MAX_AUDIO_MB = 60;
 const MAX_VIDEO_SECONDS = 30;
 
-const AUDIO_FORMATS = new Set(["mp3", "m4a", "wav", "ogg", "aac", "flac"]);
 
-const formatDateTime = (value) => {
-  const date = new Date(value);
-  return date.toLocaleString("de-DE", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-};
-
-const escapeHtml = (value) => {
-  if (!value) return "";
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-};
+// Helpers are provided by utils.js in the global scope
 
 const renderEntries = (items) => {
   if (!items.length) {
@@ -261,21 +244,7 @@ const logout = async () => {
 
 // ─── Upload Widget logic ──────────────────────────────────────────────────────
 
-const renderMedia = (item) => {
-  const url = item.file_url;
-  const type = item.file_type || "";
-
-  if (type.startsWith("image/")) {
-    return `<div class="entry__media"><img src="${url}" alt="Hochgeladener Beleg" loading="lazy" /></div>`;
-  }
-  if (type.startsWith("video/")) {
-    return `<div class="entry__media"><video src="${url}" controls></video></div>`;
-  }
-  if (type.startsWith("audio/")) {
-    return `<div class="entry__media"><audio src="${url}" controls></audio></div>`;
-  }
-  return `<a href="${url}" target="_blank" rel="noopener">Datei ansehen</a>`;
-};
+// renderMedia removed, using utils.js version
 
 const getFileType = (resourceType, format) => {
   if (resourceType === "image") return `image/${format}`;
