@@ -1099,6 +1099,11 @@ select:focus {
   }
 }
 
+.description-field::placeholder {
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
 /* ─── Inline Edit Styles ─────────────────────────────────────────────────── */
 .edit-area {
   width: 100%;
