@@ -1,6 +1,8 @@
 const SUPABASE_URL = "https://vrftpggitpagtsjrfdkl.supabase.co";
 const SUPABASE_ANON_KEY =
   "sb_publishable_5iozw5nxbYUfHsrSqOarPQ_s__vaSKU";
+const CLOUDINARY_CLOUD_NAME = "dnmrqhr8g";
+const CLOUDINARY_UNSIGNED_PRESET = "laermprotokoll_unsigned";
 
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -8,8 +10,16 @@ const form = document.getElementById("uploadForm");
 const statusEl = document.getElementById("uploadStatus");
 const entriesEl = document.getElementById("entries");
 const searchInput = document.getElementById("searchInput");
+const fileStatusEl = document.getElementById("fileStatus");
+const uploadWidgetOpener = document.getElementById("upload_widget_opener");
 
 let cachedEntries = [];
+let uploadedAsset = null;
+const MAX_VIDEO_MB = 60;
+const MAX_IMAGE_MB = 10;
+const MAX_AUDIO_MB = 10;
+const MAX_VIDEO_SECONDS = 30;
+const AUDIO_FORMATS = new Set(["mp3", "m4a", "wav", "ogg", "aac", "flac"]);
 
 const formatDateTime = (value) => {
   const date = new Date(value);
@@ -83,57 +93,127 @@ const loadEntries = async () => {
   renderEntries(cachedEntries);
 };
 
-const uploadFile = async (file, neighbor) => {
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${Date.now()}_${neighbor.replace(/\s+/g, "_")}.${fileExt}`;
-  const filePath = `uploads/${fileName}`;
+const getFileType = (resourceType, format) => {
+  if (resourceType === "image") return `image/${format}`;
+  if (resourceType === "video") {
+    return AUDIO_FORMATS.has(format) ? `audio/${format}` : `video/${format}`;
+  }
+  return "application/octet-stream";
+};
 
-  const { error: uploadError } = await client.storage
-    .from("laermprotokoll")
-    .upload(filePath, file, {
-      cacheControl: "3600",
-      upsert: false,
-    });
-
-  if (uploadError) {
-    throw uploadError;
+const buildUploadWidget = () => {
+  if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UNSIGNED_PRESET) {
+    fileStatusEl.textContent =
+      "Cloudinary ist noch nicht konfiguriert. Bitte Cloud-Name und Upload-Preset eintragen.";
+    return null;
   }
 
-  const { data } = client.storage.from("laermprotokoll").getPublicUrl(filePath);
-  return data.publicUrl;
+  return window.cloudinary.createUploadWidget(
+    {
+      cloudName: CLOUDINARY_CLOUD_NAME,
+      uploadPreset: CLOUDINARY_UNSIGNED_PRESET,
+      sources: ["local", "camera", "url"],
+      multiple: false,
+      resourceType: "auto",
+      maxImageFileSize: MAX_IMAGE_MB * 1024 * 1024,
+      maxVideoFileSize: MAX_VIDEO_MB * 1024 * 1024,
+      maxFileSize: MAX_AUDIO_MB * 1024 * 1024,
+      clientAllowedFormats: [
+        "jpg",
+        "jpeg",
+        "png",
+        "mp4",
+        "mov",
+        "webm",
+        "mp3",
+        "m4a",
+        "wav",
+        "ogg",
+        "aac",
+        "flac",
+      ],
+    },
+    (error, result) => {
+      if (error) {
+        fileStatusEl.textContent =
+          "Upload fehlgeschlagen. Bitte erneut versuchen.";
+        console.error(error);
+        return;
+      }
+      if (result.event === "success") {
+        const info = result.info;
+        uploadedAsset = {
+          url: info.secure_url,
+          resourceType: info.resource_type,
+          format: info.format,
+          bytes: info.bytes,
+          duration: info.duration,
+        };
+
+        if (
+          info.resource_type === "video" &&
+          typeof info.duration === "number" &&
+          info.duration > MAX_VIDEO_SECONDS
+        ) {
+          fileStatusEl.textContent =
+            "Video ist länger als 30 Sekunden. Bitte kürzeres Video hochladen.";
+          uploadedAsset = null;
+          return;
+        }
+
+        fileStatusEl.textContent = `Datei hochgeladen: ${info.original_filename}.${info.format}`;
+      }
+    }
+  );
 };
+
+const uploadWidget = buildUploadWidget();
+
+uploadWidgetOpener.addEventListener("click", () => {
+  if (!uploadWidget) return;
+  uploadWidget.open();
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  statusEl.textContent = "Datei wird hochgeladen...";
+  statusEl.textContent = "Eintrag wird gespeichert...";
 
   const formData = new FormData(form);
   const neighbor = formData.get("neighbor").trim();
   const email = formData.get("email").trim();
   const description = formData.get("description").trim();
-  const file = formData.get("media");
-
-  if (!neighbor || !description || !file) {
+  if (!neighbor || !description) {
     statusEl.textContent = "Bitte alle Pflichtfelder ausfüllen.";
     return;
   }
 
   try {
-    const fileUrl = await uploadFile(file, neighbor);
+    if (!uploadedAsset) {
+      statusEl.textContent = "Bitte zuerst eine Datei hochladen.";
+      return;
+    }
+
+    const fileType = getFileType(
+      uploadedAsset.resourceType,
+      uploadedAsset.format
+    );
+
     const { error } = await client.from("entries").insert([
       {
         neighbor,
         email,
         description,
-        file_url: fileUrl,
-        file_type: file.type,
+        file_url: uploadedAsset.url,
+        file_type: fileType,
       },
     ]);
 
     if (error) throw error;
 
-    statusEl.textContent = "Upload abgeschlossen. Danke!";
+    statusEl.textContent = "Eintrag gespeichert. Danke!";
     form.reset();
+    uploadedAsset = null;
+    fileStatusEl.textContent = "Hinweis: Bitte Videos auf 30 Sekunden begrenzen.";
     await loadEntries();
   } catch (error) {
     statusEl.textContent = "Upload fehlgeschlagen. Bitte in ein paar Minuten erneut versuchen.";
