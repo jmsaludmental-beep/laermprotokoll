@@ -146,8 +146,8 @@ window.handleEditEntry = (id) => {
   const container = card.querySelector(".desc-container");
   const currentText = descP.textContent;
 
-  const triggerBtn = card.querySelector(".btn-edit-trigger");
-  const reportBtn = card.querySelector(".report-button");
+  const triggerBtn = card.querySelector(".btn-edit-pencil");
+  const reportBtn = card.querySelector(".report-link");
 
   container.innerHTML = `
     <textarea class="edit-area">${currentText}</textarea>
@@ -206,10 +206,10 @@ window.saveEntryEdit = async (id) => {
       container.innerHTML = `<p class="desc">${escapeHtml(newText)}</p>`;
     });
 
-    const allMatchingTriggers = document.querySelectorAll(`[data-card-id="${id}"] .btn-edit-trigger`);
+    const allMatchingTriggers = document.querySelectorAll(`[data-card-id="${id}"] .btn-edit-pencil`);
     allMatchingTriggers.forEach(btn => btn.style.display = "block");
 
-    const allMatchingReportBtns = document.querySelectorAll(`[data-card-id="${id}"] .report-button`);
+    const allMatchingReportBtns = document.querySelectorAll(`[data-card-id="${id}"] .report-link`);
     allMatchingReportBtns.forEach(btn => btn.style.display = "block");
     
     // Refresh cached entries to keep state for subsequent renders
