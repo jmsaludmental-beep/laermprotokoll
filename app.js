@@ -99,9 +99,9 @@ const renderPersonalReports = (items) => {
   }
 
   listaResultados.innerHTML = `
-    <h3>Du hast ${items.length} Belege gemeldet:</h3>
+    <h3>Ihr habt ${items.length} Belege gemeldet:</h3>
     <p class="helper" style="margin-bottom: 20px; color: var(--accent); font-weight: 600;">
-      💡 Tipp: Drücke Strg+P (oder Teilen > Drucken am Handy), um diese Liste als PDF für deinen Vermieter zu speichern.
+      💡 Tipp: Drückt Strg+P (oder Teilen > Drucken am Handy), um diese Liste als PDF für euren Vermieter zu speichern.
     </p>
   `;
   listaResultados.innerHTML += items
@@ -208,7 +208,7 @@ const enviarEnlaceMagico = async () => {
     if (error) throw error;
 
     if (magiaStatus) {
-      magiaStatus.textContent = "✓ Link gesendet! Bitte prüfe deinen Posteingang.";
+      magiaStatus.textContent = "✓ Link gesendet! Bitte prüft euren Posteingang.";
       magiaStatus.className = "helper success";
     }
   } catch (error) {
