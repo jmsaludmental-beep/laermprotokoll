@@ -131,6 +131,73 @@ const renderPersonalReports = (items) => {
     .join("");
 };
 
+window.handleEditEntry = (id) => {
+  const card = document.querySelector(`.result-card[data-card-id="${id}"]`);
+  if (!card) return;
+
+  const descP = card.querySelector(".desc");
+  const container = card.querySelector(".desc-container");
+  const currentText = descP.textContent;
+
+  container.innerHTML = `
+    <textarea class="edit-area">${currentText}</textarea>
+    <div class="edit-actions">
+      <button class="primary" onclick="saveEntryEdit('${id}')" style="padding: 6px 16px; font-size:0.8rem">Speichern</button>
+      <button class="secondary" onclick="cancelEdit('${id}', \`${currentText.replace(/`/g, '\\`')}\`)" style="padding: 6px 16px; font-size:0.8rem">Abbrechen</button>
+    </div>
+  `;
+  
+  card.querySelector(".btn-edit-trigger").style.display = "none";
+};
+
+window.cancelEdit = (id, originalText) => {
+  const card = document.querySelector(`.result-card[data-card-id="${id}"]`);
+  if (!card) return;
+  
+  const container = card.querySelector(".desc-container");
+  container.innerHTML = `<p class="desc">${originalText}</p>`;
+  card.querySelector(".btn-edit-trigger").style.display = "block";
+};
+
+window.saveEntryEdit = async (id) => {
+  const card = document.querySelector(`.result-card[data-card-id="${id}"]`);
+  if (!card) return;
+
+  const textarea = card.querySelector(".edit-area");
+  const newText = textarea.value.trim();
+
+  if (!newText) {
+    alert("Die Beschreibung darf nicht leer sein.");
+    return;
+  }
+
+  const btnSave = card.querySelector(".edit-actions .primary");
+  btnSave.disabled = true;
+  btnSave.textContent = "Speichert...";
+
+  try {
+    const { error } = await client
+      .from("entries")
+      .update({ description: newText })
+      .eq("id", id);
+
+    if (error) throw error;
+
+    // Update UI
+    const container = card.querySelector(".desc-container");
+    container.innerHTML = `<p class="desc">${escapeHtml(newText)}</p>`;
+    card.querySelector(".btn-edit-trigger").style.display = "block";
+    
+    // Also refresh public feed to show changes
+    loadEntries();
+  } catch (err) {
+    console.error(err);
+    alert("Fehler beim Speichern. Bitte versuche es erneut.");
+    btnSave.disabled = false;
+    btnSave.textContent = "Speichern";
+  }
+};
+
 const updateTotalCount = () => {
   const nonHidden = cachedEntries.filter((e) => !e.hidden).length;
   if (totalReportsEl) totalReportsEl.textContent = nonHidden;
