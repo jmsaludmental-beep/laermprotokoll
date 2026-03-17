@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="de">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lärmprotokoll Hamburg · Registro de Ruido</title>
+    <title>Lärmprotokoll Hamburg · Baulärm-Dokumentation</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,47 +16,47 @@
     <main class="page">
       <header class="hero">
         <div class="hero__content">
-          <p class="tag">Lärmprotokoll · Hamburgo</p>
-          <h1>Registro comunitario de ruido de obra</h1>
+          <p class="tag">Lärmprotokoll · Hamburg</p>
+          <h1>Gemeinsame Dokumentation von Baulärm</h1>
           <p class="subtitle">
-            Subimos evidencias (video, foto o audio) para documentar el impacto en
-            500 viviendas y respaldar la solicitud de reducción del alquiler.
+            Wir sammeln Belege (Video, Foto oder Audio), um die Belastung für
+            500 Wohnungen zu dokumentieren und eine Mietminderung zu begründen.
           </p>
           <div class="hero__chips">
-            <span>Transparente</span>
-            <span>Participativo</span>
-            <span>Ordenado por fecha</span>
+            <span>Transparent</span>
+            <span>Für alle Nachbarn</span>
+            <span>Nach Datum sortiert</span>
           </div>
         </div>
         <div class="hero__panel">
-          <h2>Subir evidencia</h2>
+          <h2>Beleg hochladen</h2>
           <form id="uploadForm" class="form">
             <label>
-              Vecino/a (nombre o identificador)
-              <input type="text" name="neighbor" required placeholder="Ej: Piso 3B · Marta" />
+              Nachbar:in (Name oder Kennung)
+              <input type="text" name="neighbor" required placeholder="z. B. 3. OG · Marta" />
             </label>
             <label>
-              Email (opcional)
+              E-Mail (optional)
               <input type="email" name="email" placeholder="marta@email.com" />
             </label>
             <label>
-              Descripción breve
+              Kurze Beschreibung
               <textarea
                 name="description"
                 rows="3"
                 required
-                placeholder="Ej: Martillazos constantes, vibraciones fuertes."
+                placeholder="z. B. Ständiges Hämmern, starke Vibrationen."
               ></textarea>
             </label>
             <label>
-              Archivo (video, foto o audio)
+              Datei (Video, Foto oder Audio)
               <input type="file" name="media" accept="video/*,image/*,audio/*" required />
             </label>
             <label class="inline">
               <input type="checkbox" name="consent" required />
-              Confirmo que este material es real y corresponde a la obra.
+              Ich bestätige, dass dieses Material echt ist und die Baustelle betrifft.
             </label>
-            <button type="submit" class="primary">Subir</button>
+            <button type="submit" class="primary">Hochladen</button>
             <p class="helper" id="uploadStatus"></p>
           </form>
         </div>
@@ -65,11 +65,11 @@
       <section class="board">
         <div class="board__header">
           <div>
-            <h2>Evidencias recientes</h2>
-            <p>Ordenadas por fecha y hora de subida.</p>
+            <h2>Neueste Belege</h2>
+            <p>Sortiert nach Datum und Uhrzeit der Uploads.</p>
           </div>
           <div class="filters">
-            <input id="searchInput" type="search" placeholder="Buscar por vecino o descripción" />
+            <input id="searchInput" type="search" placeholder="Suche nach Nachbar:in oder Beschreibung" />
           </div>
         </div>
 
@@ -78,25 +78,24 @@
 
       <section class="info">
         <div>
-          <h3>¿Cómo se usa esto?</h3>
+          <h3>Wie funktioniert das?</h3>
           <p>
-            Cada subida registra automáticamente la fecha y hora local. El material se
-            mantiene público para que la comunidad pueda consultarlo y usarlo en el
-            Lärmprotokoll.
+            Jeder Upload speichert automatisch Datum und Uhrzeit. Die Inhalte bleiben
+            öffentlich, damit die Nachbarschaft sie im Lärmprotokoll nutzen kann.
           </p>
         </div>
         <div>
-          <h3>Privacidad</h3>
+          <h3>Datenschutz</h3>
           <p>
-            Evita capturar rostros de terceros. Si necesitas anonimizar, usa un
-            identificador en vez de nombre completo.
+            Bitte keine Gesichter Dritter aufnehmen. Wenn nötig, nutze eine Kennung
+            statt vollständigem Namen.
           </p>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <p>Creado por la comunidad · Hamburgo</p>
+      <p>Erstellt von der Nachbarschaft · Hamburg</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

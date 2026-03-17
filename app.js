@@ -22,7 +22,7 @@ const formatDateTime = (value) => {
 const renderEntries = (items) => {
   if (!items.length) {
     entriesEl.innerHTML =
-      "<div class='entry'>Aún no hay evidencias. ¡Sé la primera persona en subir!</div>";
+      "<div class='entry'>Noch keine Belege. Sei die erste Person, die etwas hochlädt!</div>";
     return;
   }
 
@@ -48,7 +48,7 @@ const renderMedia = (item) => {
   const type = item.file_type || "";
 
   if (type.startsWith("image/")) {
-    return `<div class="entry__media"><img src="${url}" alt="Evidencia subida" loading="lazy" /></div>`;
+    return `<div class="entry__media"><img src="${url}" alt="Hochgeladener Beleg" loading="lazy" /></div>`;
   }
   if (type.startsWith("video/")) {
     return `<div class="entry__media"><video src="${url}" controls></video></div>`;
@@ -56,7 +56,7 @@ const renderMedia = (item) => {
   if (type.startsWith("audio/")) {
     return `<div class="entry__media"><audio src="${url}" controls></audio></div>`;
   }
-  return `<a href="${url}" target="_blank" rel="noopener">Ver archivo</a>`;
+  return `<a href="${url}" target="_blank" rel="noopener">Datei ansehen</a>`;
 };
 
 const escapeHtml = (value) =>
@@ -75,7 +75,7 @@ const loadEntries = async () => {
 
   if (error) {
     entriesEl.innerHTML =
-      "<div class='entry'>No se pudieron cargar las evidencias.</div>";
+      "<div class='entry'>Die Belege konnten nicht geladen werden.</div>";
     return;
   }
 
@@ -105,7 +105,7 @@ const uploadFile = async (file, neighbor) => {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  statusEl.textContent = "Subiendo archivo...";
+  statusEl.textContent = "Datei wird hochgeladen...";
 
   const formData = new FormData(form);
   const neighbor = formData.get("neighbor").trim();
@@ -114,7 +114,7 @@ form.addEventListener("submit", async (event) => {
   const file = formData.get("media");
 
   if (!neighbor || !description || !file) {
-    statusEl.textContent = "Completa todos los campos obligatorios.";
+    statusEl.textContent = "Bitte alle Pflichtfelder ausfüllen.";
     return;
   }
 
@@ -132,11 +132,11 @@ form.addEventListener("submit", async (event) => {
 
     if (error) throw error;
 
-    statusEl.textContent = "Subida completada. ¡Gracias!";
+    statusEl.textContent = "Upload abgeschlossen. Danke!";
     form.reset();
     await loadEntries();
   } catch (error) {
-    statusEl.textContent = "No se pudo subir. Reintenta en unos minutos.";
+    statusEl.textContent = "Upload fehlgeschlagen. Bitte in ein paar Minuten erneut versuchen.";
     console.error(error);
   }
 });
