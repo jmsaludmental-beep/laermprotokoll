@@ -175,12 +175,39 @@ const buildUploadWidget = () => {
   );
 };
 
-const uploadWidget = buildUploadWidget();
+let uploadWidget = null;
 
-uploadWidgetOpener.addEventListener("click", () => {
-  if (!uploadWidget) return;
-  uploadWidget.open();
-});
+const ensureCloudinaryScript = () =>
+  new Promise((resolve, reject) => {
+    if (window.cloudinary && window.cloudinary.createUploadWidget) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://upload-widget.cloudinary.com/latest/global/all.js";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Cloudinary script load failed"));
+    document.head.appendChild(script);
+  });
+
+const initUploadWidget = async () => {
+  try {
+    await ensureCloudinaryScript();
+    uploadWidget = buildUploadWidget();
+    if (uploadWidgetOpener) {
+      uploadWidgetOpener.addEventListener("click", () => {
+        if (!uploadWidget) return;
+        uploadWidget.open();
+      });
+    }
+  } catch (error) {
+    fileStatusEl.textContent =
+      "Cloudinary-Widget konnte nicht geladen werden. Bitte Seite neu laden.";
+    console.error(error);
+  }
+};
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -240,4 +267,5 @@ searchInput.addEventListener("input", (event) => {
   renderEntries(filtered);
 });
 
+initUploadWidget();
 loadEntries();
