@@ -928,17 +928,17 @@ select:focus {
   background: white;
   color: var(--muted);
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 8px 16px;
-  border-radius: 12px;
+  font-size: 1.1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   border: 1px solid var(--stroke);
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
   z-index: 100;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
 }
 
 .admin-link-top:hover {
