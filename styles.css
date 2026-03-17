@@ -684,6 +684,13 @@ select:focus {
   text-overflow: ellipsis;
   font-size: 0.95rem;
   line-height: 1.5;
+  cursor: pointer;
+  transition: max-height 0.3s ease;
+}
+
+.entry__description.is-expanded {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
 }
 
 .entry__footer {
@@ -692,13 +699,14 @@ select:focus {
   align-items: center;
   margin-top: auto;
   padding-top: 12px;
-  border-top: 1px solid var(--bg);
+  border-top: 1px solid var(--stroke-soft);
+  min-height: 32px;
 }
 
 .btn-edit-pencil {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 22px;
+  right: 22px;
   background: var(--accent-soft);
   color: var(--accent);
   border: none;

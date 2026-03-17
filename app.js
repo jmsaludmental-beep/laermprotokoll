@@ -89,7 +89,7 @@ const renderEntries = (items) => {
         <h3 class="entry__title">${escapeHtml(cardTitle)}</h3>
         ${media}
         <div class="desc-container">
-          <p class="entry__description desc">${escapeHtml(item.description)}</p>
+          <p class="entry__description desc" onclick="toggleDescription('${item.id}')" title="Klicken zum Erweitern">${escapeHtml(item.description)}</p>
         </div>
         <div class="entry__footer">
           <p class="entry__meta">👤 ${escapeHtml(publicName)}</p>
@@ -208,6 +208,12 @@ window.saveEntryEdit = async (id) => {
     allMatchingContainers.forEach(container => {
       container.innerHTML = `<p class="desc">${escapeHtml(newText)}</p>`;
     });
+
+    const descP = document.querySelector(`[data-card-id="${id}"] .entry__description`);
+    if (descP) {
+      descP.classList.remove('is-expanded');
+      descP.innerHTML = escapeHtml(newText);
+    }
 
     const allMatchingTriggers = document.querySelectorAll(`[data-card-id="${id}"] .btn-edit-pencil`);
     allMatchingTriggers.forEach(btn => btn.style.display = "block");
@@ -573,6 +579,11 @@ window.handleReportContent = async (entryId) => {
     link.textContent = "Inhalt melden";
     link.style.pointerEvents = "auto";
   }
+};
+
+window.toggleDescription = (id) => {
+  const desc = document.querySelector(`[data-card-id="${id}"] .entry__description`);
+  if (desc) desc.classList.toggle('is-expanded');
 };
 
 if (btnCookieAccept) {
