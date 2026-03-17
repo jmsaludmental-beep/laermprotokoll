@@ -72,30 +72,25 @@ const renderEntries = (items) => {
         ? `<span class="entry__badge">${escapeHtml(item.noise_type)}</span>`
         : "";
 
-      const publicName =
-        item.neighbor || "Anonyme:r Nachbar:in";
-
       const isOwner = userOwnedIds.has(item.id);
       const editButton = isOwner 
-        ? `<button class="btn-edit-trigger" style="margin-top: 12px;" onclick="handleEditEntry('${item.id}')">Bearbeiten</button>` 
+        ? `<button class="btn-edit-pencil" title="Bearbeiten" onclick="handleEditEntry('${item.id}')">✎</button>` 
         : "";
 
       return `
       <article class="entry" data-entry-id="${item.id}" data-card-id="${item.id}">
+        ${editButton}
         <div class="entry__header">
           ${noiseBadge}
         </div>
         <h3 class="entry__title">${escapeHtml(cardTitle)}</h3>
         ${media}
         <div class="desc-container">
-          <p class="desc">${escapeHtml(item.description)}</p>
+          <p class="entry__description desc">${escapeHtml(item.description)}</p>
         </div>
-        <p class="entry__meta">👤 ${escapeHtml(publicName)}</p>
-        <div class="entry__actions" style="display: flex; gap: 8px; align-items: center;">
-          <button class="report-button" type="button" data-report-id="${item.id}" style="margin: 0;">
-            Inhalt melden
-          </button>
-          ${editButton}
+        <div class="entry__footer">
+          <p class="entry__meta">👤 ${escapeHtml(publicName)}</p>
+          <span class="report-link" onclick="handleReportContent('${item.id}')">Inhalt melden</span>
         </div>
       </article>
     `;

@@ -352,6 +352,7 @@ select:focus {
   gap: 16px;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
+  position: relative; /* Für den Bearbeiten-Stift */
 }
 
 .entry:hover {
@@ -423,24 +424,18 @@ select:focus {
   width: calc(100% - 32px);
 }
 
-.report-button {
-  margin-top: auto;
-  align-self: flex-start;
-  background: none;
-  border: 1px solid var(--stroke);
-  color: var(--muted);
-  padding: 6px 12px;
-  border-radius: 8px;
+.report-link {
   font-size: 0.75rem;
+  color: var(--muted);
+  text-decoration: none;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
 }
 
-.report-button:hover {
-  border-color: #ef4444;
-  color: #ef4444;
-  background: #fef2f2;
+.report-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 .status--hidden {
@@ -681,6 +676,48 @@ select:focus {
 .entry__description {
   color: var(--ink);
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.entry__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--bg);
+}
+
+.btn-edit-pencil {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 1.1rem;
+  line-height: 1;
+  z-index: 5;
+}
+
+.btn-edit-pencil:hover {
+  background: var(--accent);
+  color: white;
+  transform: scale(1.1);
 }
 
 /* ─── Upload button states ─────────────────────────────────────────────────── */
