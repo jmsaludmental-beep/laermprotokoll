@@ -114,6 +114,64 @@ h1 {
   transform: translateY(-2px);
 }
 
+/* ─── Hero steps ────────────────────────────────────────────────────────────── */
+.hero__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.hero__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid var(--stroke);
+  border-left: 4px solid var(--accent);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.hero__step:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+  border-left-color: var(--accent-hover);
+}
+
+.hero__step-number {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-family: "Fraunces", serif;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(239, 111, 58, 0.3);
+}
+
+.hero__step strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.hero__step p {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.45;
+}
+
 .hero__panel {
   background: var(--card);
   border-radius: var(--radius);
@@ -250,6 +308,56 @@ select:focus {
 .board {
   margin-top: 40px;
 }
+
+/* ─── How it works ─────────────────────────────────────────────────────────── */
+.how-it-works {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin: 64px 0;
+}
+
+.how-it-works__step {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.how-it-works__number {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-family: "Fraunces", serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(239, 111, 58, 0.25);
+}
+
+.how-it-works__step h3 {
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.how-it-works__step p {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ─── Entry title ──────────────────────────────────────────────────────────── */
+.entry__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  font-family: "Manrope", sans-serif;
+}
+
 
 .board__header {
   display: flex;
@@ -474,5 +582,261 @@ select:focus {
 
   .entries {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Required mark ────────────────────────────────────────────────────────── */
+.required-mark {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+/* ─── Entry header & badge ─────────────────────────────────────────────────── */
+.entry__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.entry__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.entry__description {
+  color: var(--ink);
+  margin: 0;
+}
+
+/* ─── Upload button states ─────────────────────────────────────────────────── */
+.secondary--done {
+  background: #e8f7f1;
+  color: #1a6a4f;
+  border-color: #bfe6d6;
+}
+
+.secondary--required {
+  animation: shake 0.4s ease;
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* ─── Skeleton loader ──────────────────────────────────────────────────────── */
+.entry--loading {
+  pointer-events: none;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--stroke) 25%,
+    #f0ebe4 50%,
+    var(--stroke) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 8px;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeleton--title {
+  height: 18px;
+  width: 45%;
+  border-radius: 999px;
+}
+
+.skeleton--media {
+  height: 180px;
+  border-radius: 16px;
+  width: 100%;
+}
+
+.skeleton--text {
+  height: 14px;
+  width: 90%;
+}
+
+.skeleton--text.short {
+  width: 55%;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Empty state ──────────────────────────────────────────────────────────── */
+.entry--empty {
+  text-align: center;
+  color: var(--muted);
+  grid-column: 1 / -1;
+  padding: 48px 24px;
+  border-style: dashed;
+}
+
+/* ─── Personal Protocol ────────────────────────────────────────────────────── */
+.personal-protocol {
+  margin-top: 80px;
+  background: var(--card);
+  border-radius: 32px;
+  padding: 48px;
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow-md);
+}
+
+.personal-protocol__content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.search-box {
+  display: flex;
+  gap: 12px;
+  margin: 32px 0;
+  max-width: 500px;
+}
+
+.search-box input {
+  flex: 1;
+}
+
+.search-results {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.result-card {
+  background: #fff;
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  padding: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.result-card h4 {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-size: 1.2rem;
+  color: var(--ink);
+}
+
+.result-card .meta {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.result-card .address {
+  background: var(--bg);
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: var(--ink);
+  border: 1px dashed var(--stroke);
+}
+
+.result-card .desc {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* ─── Print styles ─────────────────────────────────────────────────────────── */
+@media print {
+  /* Hide UI elements and sections not needed for the report */
+  header, 
+  footer, 
+  .hero, 
+  .board, 
+  .info,
+  .search-box, 
+  button,
+  .report-button {
+    display: none !important;
+  }
+
+  /* Reset layout for the page */
+  body {
+    background: white;
+    color: black;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Show only the search results */
+  .personal-protocol {
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  .search-results {
+    display: block;
+    margin: 0;
+    padding: 0;
+    visibility: visible !important;
+  }
+
+  .search-results * {
+    visibility: visible !important;
+  }
+
+  /* Header for the printed document */
+  .search-results::before {
+    content: "Lärmprotokoll Sternbrücke - Hamburg";
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+    text-align: left;
+  }
+
+  /* Force cards to be full width and professional */
+  .result-card {
+    border: 1px solid #ddd;
+    border-radius: 4px; /* Simpler borders for print */
+    margin-bottom: 25px;
+    padding: 20px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .result-card h4 {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+  }
+
+  .result-card .address {
+    border: 1px solid #eee;
+    background: #fdfdfd;
+  }
+
+  .footer__link {
+    text-decoration: none;
+    color: #444;
+    font-size: 0.8rem;
   }
 }

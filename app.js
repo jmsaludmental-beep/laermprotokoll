@@ -6,73 +6,74 @@ const CLOUDINARY_UNSIGNED_PRESET = "laermprotokoll_unsigned";
 
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// ─── DOM Elements ─────────────────────────────────────────────────────────────
 const form = document.getElementById("uploadForm");
 const statusEl = document.getElementById("uploadStatus");
 const entriesEl = document.getElementById("entries");
 const fileStatusEl = document.getElementById("fileStatus");
 const uploadWidgetOpener = document.getElementById("upload_widget_opener");
-const noiseFilter = document.getElementById("noiseFilter");
 const totalReportsEl = document.getElementById("totalReports");
 
+// Personal Protocol Elements
+const emailConsultaInput = document.getElementById("email-consulta");
+const btnMagicLink = document.getElementById("btn-magic-link");
+const btnLogout = document.getElementById("btn-logout");
+const protocolLogin = document.getElementById("protocol-login");
+const protocolAuthenticated = document.getElementById("protocol-authenticated");
+const protocolLoading = document.getElementById("protocol-loading");
+const userGreeting = document.getElementById("user-greeting");
+const magiaStatus = document.getElementById("magic-link-status");
+const listaResultados = document.getElementById("lista-resultados");
+
+// ─── State & Config ───────────────────────────────────────────────────────────
 let cachedEntries = [];
 let uploadedAsset = null;
 const MAX_VIDEO_MB = 100;
 const MAX_IMAGE_MB = 10;
 const MAX_AUDIO_MB = 60;
 const MAX_VIDEO_SECONDS = 30;
-const AUDIO_FORMATS = new Set(["mp3", "m4a", "wav", "ogg", "aac", "flac"]);
 
-const formatDateTime = (value) => {
-  const date = new Date(value);
-  return date.toLocaleString("de-DE", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-};
-
-const formatEventDateTime = (item) => {
-  const parts = [];
-  if (item.event_date) {
-    const date = new Date(item.event_date);
-    parts.push(
-      date.toLocaleDateString("de-DE", {
-        dateStyle: "medium",
-      })
-    );
-  }
-  if (item.event_time) {
-    parts.push(item.event_time.slice(0, 5));
-  }
-  return parts.join(" · ");
-};
+// ─── Render Functions ──────────────────────────────────────────────────────────
 
 const renderEntries = (items) => {
   if (!items.length) {
     entriesEl.innerHTML =
-      "<div class='entry'>Noch keine Belege. Sei die erste Person, die etwas hochlädt!</div>";
+      "<div class='entry entry--empty'>Noch keine Belege. Sei die erste Person, die etwas hochlädt!</div>";
     return;
   }
 
   entriesEl.innerHTML = items
     .map((item) => {
       const media = renderMedia(item);
-      const noiseLine = item.noise_type
-        ? `<p class="entry__meta">Lärmtyp: ${escapeHtml(item.noise_type)}</p>`
+
+      // Title: Full date + time
+      const eventDateLabel = item.event_date
+        ? new Date(item.event_date).toLocaleDateString("de-DE", { dateStyle: "long" })
+        : null;
+      const eventTimeLabel = item.event_time
+        ? item.event_time.slice(0, 5) + " Uhr"
+        : null;
+      const titleParts = [eventDateLabel, eventTimeLabel].filter(Boolean);
+      const cardTitle = titleParts.length
+        ? titleParts.join(" · ")
+        : "Datum nicht angegeben";
+
+      const noiseBadge = item.noise_type
+        ? `<span class="entry__badge">${escapeHtml(item.noise_type)}</span>`
         : "";
-      const eventLine =
-        item.event_date || item.event_time
-          ? `<p class="entry__meta">Zeitpunkt: ${formatEventDateTime(item)}</p>`
-          : "";
+
       const publicName =
         item.display_name || item.neighbor || "Anonyme:r Nachbar:in";
-      const neighborLine = `<p class="entry__meta">Gemeldet von: ${escapeHtml(publicName)}</p>`;
+
       return `
       <article class="entry" data-entry-id="${item.id}">
-        ${eventLine}
-        ${noiseLine}
+        <div class="entry__header">
+          ${noiseBadge}
+        </div>
+        <h3 class="entry__title">${escapeHtml(cardTitle)}</h3>
         ${media}
-        <p>${escapeHtml(item.description)}</p>
-        ${neighborLine}
+        <p class="entry__description">${escapeHtml(item.description)}</p>
+        <p class="entry__meta">👤 ${escapeHtml(publicName)}</p>
         <button class="report-button" type="button" data-report-id="${item.id}">
           Inhalt melden
         </button>
@@ -80,40 +81,73 @@ const renderEntries = (items) => {
     `;
     })
     .join("");
+};
 
-  // Update total count
-  const nonHidden = cachedEntries.filter(e => !e.hidden).length;
+const renderPersonalReports = (items) => {
+  if (!items.length) {
+    listaResultados.innerHTML =
+      "<p class='helper'>Keine Berichte unter dieser E-Mail-Adresse gefunden.</p>";
+    return;
+  }
+
+  listaResultados.innerHTML = `
+    <h3>Du hast ${items.length} Belege gemeldet:</h3>
+    <p class="helper" style="margin-bottom: 20px; color: var(--accent); font-weight: 600;">
+      💡 Tipp: Drücke Strg+P (oder Teilen > Drucken am Handy), um diese Liste als PDF für deinen Vermieter zu speichern.
+    </p>
+  `;
+  listaResultados.innerHTML += items
+    .map((item) => {
+      const fecha = formatDateTime(item.created_at);
+      const address = item.full_address
+        ? `<div class="address"><strong>Anschrift:</strong> ${escapeHtml(item.full_address)}</div>`
+        : "";
+      const media = item.file_url
+        ? `<a href="${item.file_url}" target="_blank" rel="noopener" class="footer__link">Datei ansehen ↗</a>`
+        : "";
+
+      return `
+      <div class="result-card">
+        <div class="meta">${fecha}</div>
+        <h4>${escapeHtml(item.noise_type || "Baulärm")}</h4>
+        ${address}
+        <p class="desc">${escapeHtml(item.description)}</p>
+        ${media}
+      </div>
+    `;
+    })
+    .join("");
+};
+
+const updateTotalCount = () => {
+  const nonHidden = cachedEntries.filter((e) => !e.hidden).length;
   if (totalReportsEl) totalReportsEl.textContent = nonHidden;
 };
 
-const renderMedia = (item) => {
-  const url = item.file_url;
-  const type = item.file_type || "";
-
-  if (type.startsWith("image/")) {
-    return `<div class="entry__media"><img src="${url}" alt="Hochgeladener Beleg" loading="lazy" /></div>`;
-  }
-  if (type.startsWith("video/")) {
-    return `<div class="entry__media"><video src="${url}" controls></video></div>`;
-  }
-  if (type.startsWith("audio/")) {
-    return `<div class="entry__media"><audio src="${url}" controls></audio></div>`;
-  }
-  return `<a href="${url}" target="_blank" rel="noopener">Datei ansehen</a>`;
+const showLoadingState = () => {
+  entriesEl.innerHTML = `
+    <div class="entry entry--loading">
+      <div class="skeleton skeleton--title"></div>
+      <div class="skeleton skeleton--media"></div>
+      <div class="skeleton skeleton--text"></div>
+      <div class="skeleton skeleton--text short"></div>
+    </div>
+    <div class="entry entry--loading">
+      <div class="skeleton skeleton--title"></div>
+      <div class="skeleton skeleton--media"></div>
+      <div class="skeleton skeleton--text"></div>
+      <div class="skeleton skeleton--text short"></div>
+    </div>
+  `;
 };
 
-const escapeHtml = (value) =>
-  value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-
 const loadEntries = async () => {
+  showLoadingState();
+
+  // Security: Only select public fields for the main board
   const { data, error } = await client
     .from("public_entries")
-    .select("*")
+    .select("id, created_at, description, noise_type, event_date, event_time, file_url, file_type, display_name, neighbor, hidden")
     .eq("hidden", false)
     .order("created_at", { ascending: false });
 
@@ -124,8 +158,89 @@ const loadEntries = async () => {
   }
 
   cachedEntries = data || [];
+  updateTotalCount();
   renderEntries(cachedEntries);
 };
+
+// ─── Auth & Personal Data ─────────────────────────────────────────────────────
+
+const toggleProtocolStates = (session) => {
+  if (session) {
+    if (protocolLogin) protocolLogin.style.display = "none";
+    if (protocolAuthenticated) protocolAuthenticated.style.display = "block";
+    if (userGreeting) userGreeting.textContent = `Angemeldet als: ${session.user.email}`;
+    consultarMisReportes(session.user.email);
+  } else {
+    if (protocolLogin) protocolLogin.style.display = "block";
+    if (protocolAuthenticated) protocolAuthenticated.style.display = "none";
+    if (listaResultados) listaResultados.innerHTML = "";
+  }
+};
+
+const enviarEnlaceMagico = async () => {
+  const email = emailConsultaInput.value.trim().toLowerCase();
+  if (!email) {
+    alert("Bitte gib eine E-Mail-Adresse ein.");
+    return;
+  }
+
+  if (magiaStatus) {
+    magiaStatus.textContent = "Sende Link...";
+    magiaStatus.className = "helper";
+  }
+  if (btnMagicLink) btnMagicLink.disabled = true;
+
+  try {
+    const { error } = await client.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: window.location.href.split('#')[0]
+      }
+    });
+
+    if (error) throw error;
+
+    if (magiaStatus) {
+      magiaStatus.textContent = "✓ Link gesendet! Bitte prüfe deinen Posteingang.";
+      magiaStatus.className = "helper success";
+    }
+  } catch (error) {
+    console.error(error);
+    if (magiaStatus) {
+      magiaStatus.textContent = "Fehler: " + (error.message || "Unbekannter Fehler");
+      magiaStatus.className = "helper error";
+    }
+    if (btnMagicLink) btnMagicLink.disabled = false;
+  }
+};
+
+const consultarMisReportes = async (email) => {
+  if (!listaResultados) return;
+  listaResultados.innerHTML = "<p class='helper'>Deine Berichte werden geladen...</p>";
+  
+  try {
+    const { data, error } = await client
+      .from("entries")
+      .select("*")
+      .eq("email", email)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    renderPersonalReports(data || []);
+  } catch (error) {
+    console.error(error);
+    listaResultados.innerHTML =
+      "<p class='helper error'>Fehler beim Laden deiner Berichte.</p>";
+  }
+};
+
+const logout = async () => {
+  await client.auth.signOut();
+  window.location.hash = ""; 
+};
+
+// ─── Upload Widget logic ──────────────────────────────────────────────────────
 
 const getFileType = (resourceType, format) => {
   if (resourceType === "image") return `image/${format}`;
@@ -153,18 +268,9 @@ const buildUploadWidget = () => {
       maxVideoFileSize: MAX_VIDEO_MB * 1024 * 1024,
       maxFileSize: MAX_VIDEO_MB * 1024 * 1024,
       clientAllowedFormats: [
-        "jpg",
-        "jpeg",
-        "png",
-        "mp4",
-        "mov",
-        "webm",
-        "mp3",
-        "m4a",
-        "wav",
-        "ogg",
-        "aac",
-        "flac",
+        "jpg", "jpeg", "png",
+        "mp4", "mov", "webm",
+        "mp3", "m4a", "wav", "ogg", "aac", "flac",
       ],
     },
     (error, result) => {
@@ -203,49 +309,36 @@ const buildUploadWidget = () => {
           return;
         }
 
-        fileStatusEl.textContent = `Datei hochgeladen: ${info.original_filename}.${info.format}`;
+        fileStatusEl.textContent = `✓ Datei hochgeladen: ${info.original_filename}.${info.format}`;
+        fileStatusEl.className = "helper success";
+        uploadWidgetOpener.classList.add("secondary--done");
+        uploadWidgetOpener.textContent = "✓ Datei hochgeladen";
       }
     }
   );
 };
 
 let uploadWidget = null;
-
-const ensureCloudinaryScript = () =>
-  new Promise((resolve, reject) => {
-    if (window.cloudinary && window.cloudinary.createUploadWidget) {
-      resolve();
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://upload-widget.cloudinary.com/latest/global/all.js";
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Cloudinary script load failed"));
-    document.head.appendChild(script);
-  });
-
-const initUploadWidget = async () => {
-  try {
-    await ensureCloudinaryScript();
-    uploadWidget = buildUploadWidget();
-    if (uploadWidgetOpener) {
-      uploadWidgetOpener.addEventListener("click", () => {
-        if (!uploadWidget) return;
-        uploadWidget.open();
-      });
-    }
-  } catch (error) {
-    fileStatusEl.textContent =
-      "Cloudinary-Widget konnte nicht geladen werden. Bitte Seite neu laden.";
-    console.error(error);
+const initUploadWidget = () => {
+  if (!window.cloudinary || !window.cloudinary.createUploadWidget) {
+    if (fileStatusEl) fileStatusEl.textContent = "Cloudinary-Widget konnte nicht geladen werden.";
+    return;
+  }
+  uploadWidget = buildUploadWidget();
+  if (uploadWidgetOpener) {
+    uploadWidgetOpener.addEventListener("click", () => {
+      if (!uploadWidget) return;
+      uploadWidget.open();
+    });
   }
 };
+
+// ─── Event Listeners ──────────────────────────────────────────────────────────
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   statusEl.textContent = "Eintrag wird gespeichert...";
+  statusEl.className = "helper";
 
   const formData = new FormData(form);
   const displayName = formData.get("display_name").trim();
@@ -255,22 +348,24 @@ form.addEventListener("submit", async (event) => {
   const noiseType = formData.get("noise_type").trim();
   const eventDate = formData.get("event_date");
   const eventTime = formData.get("event_time");
+
   if (!displayName || !description) {
     statusEl.textContent = "Bitte die Pflichtfelder ausfüllen.";
     statusEl.className = "helper error";
     return;
   }
 
-  try {
-    if (!uploadedAsset) {
-      statusEl.textContent = "Bitte zuerst eine Datei hochladen.";
-      return;
-    }
+  if (!uploadedAsset) {
+    statusEl.textContent = "Bitte zuerst eine Datei hochladen.";
+    statusEl.className = "helper error";
+    uploadWidgetOpener.classList.add("secondary--required");
+    uploadWidgetOpener.focus();
+    setTimeout(() => uploadWidgetOpener.classList.remove("secondary--required"), 3000);
+    return;
+  }
 
-    const fileType = getFileType(
-      uploadedAsset.resourceType,
-      uploadedAsset.format
-    );
+  try {
+    const fileType = getFileType(uploadedAsset.resourceType, uploadedAsset.format);
 
     const { error } = await client.from("entries").insert([
       {
@@ -292,8 +387,10 @@ form.addEventListener("submit", async (event) => {
     statusEl.className = "helper success";
     form.reset();
     uploadedAsset = null;
-    fileStatusEl.textContent = "Hinweis: Bitte Videos auf 30 Sekunden begrenzen.";
+    fileStatusEl.textContent = "Hinweis: Bitte Videos auf 30 Sek. begrenzen.";
     fileStatusEl.className = "helper";
+    uploadWidgetOpener.classList.remove("secondary--done");
+    uploadWidgetOpener.textContent = "Datei auswählen & hochladen";
     await loadEntries();
 
     setTimeout(() => {
@@ -301,22 +398,25 @@ form.addEventListener("submit", async (event) => {
       statusEl.className = "helper";
     }, 5000);
   } catch (error) {
-    statusEl.textContent = "Upload fehlgeschlagen. Bitte in ein paar Minuten erneut versuchen.";
+    statusEl.textContent = "Upload fehlgeschlagen.";
     statusEl.className = "helper error";
     console.error(error);
   }
 });
 
-const applyFilters = () => {
-  const typeFilter = noiseFilter.value;
+if (btnMagicLink) {
+  btnMagicLink.addEventListener("click", enviarEnlaceMagico);
+}
 
-  const filtered = cachedEntries.filter((entry) => {
-    return !typeFilter || entry.noise_type === typeFilter;
+if (btnLogout) {
+  btnLogout.addEventListener("click", logout);
+}
+
+if (emailConsultaInput) {
+  emailConsultaInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") enviarEnlaceMagico();
   });
-  renderEntries(filtered);
-};
-
-noiseFilter.addEventListener("change", applyFilters);
+}
 
 entriesEl.addEventListener("click", async (event) => {
   const button = event.target.closest(".report-button");
@@ -346,5 +446,26 @@ entriesEl.addEventListener("click", async (event) => {
   }
 });
 
+// Fix: set today as max date to prevent future dates
+const eventDateInput = document.getElementById("event_date");
+if (eventDateInput) {
+  eventDateInput.max = new Date().toISOString().split("T")[0];
+}
+
 initUploadWidget();
 loadEntries();
+
+// Auth State Listener
+client.auth.onAuthStateChange((event, session) => {
+  toggleProtocolStates(session);
+});
+
+// Initial check for session
+const checkInitialSession = async () => {
+  if (protocolLoading) protocolLoading.style.display = "block";
+  const { data: { session } } = await client.auth.getSession();
+  if (protocolLoading) protocolLoading.style.display = "none";
+  toggleProtocolStates(session);
+};
+
+checkInitialSession();

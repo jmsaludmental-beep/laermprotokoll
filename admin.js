@@ -15,53 +15,7 @@ const adminSearch = document.getElementById("adminSearch");
 
 let cachedEntries = [];
 
-const escapeHtml = (value) =>
-  (value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-
-const formatDateTime = (value) => {
-  const date = new Date(value);
-  return date.toLocaleString("de-DE", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-};
-
-const formatEventDateTime = (item) => {
-  const parts = [];
-  if (item.event_date) {
-    const date = new Date(item.event_date);
-    parts.push(
-      date.toLocaleDateString("de-DE", {
-        dateStyle: "medium",
-      })
-    );
-  }
-  if (item.event_time) {
-    parts.push(item.event_time.slice(0, 5));
-  }
-  return parts.join(" · ");
-};
-
-const renderMedia = (item) => {
-  const url = item.file_url;
-  const type = item.file_type || "";
-
-  if (type.startsWith("image/")) {
-    return `<div class="entry__media"><img src="${url}" alt="Beleg" loading="lazy" /></div>`;
-  }
-  if (type.startsWith("video/")) {
-    return `<div class="entry__media"><video src="${url}" controls></video></div>`;
-  }
-  if (type.startsWith("audio/")) {
-    return `<div class="entry__media"><audio src="${url}" controls></audio></div>`;
-  }
-  return `<a href="${url}" target="_blank" rel="noopener">Datei ansehen</a>`;
-};
+// ─── Render ───────────────────────────────────────────────────────────────────
 
 const renderEntries = (items) => {
   if (!items.length) {
@@ -127,6 +81,8 @@ const loadEntries = async () => {
   renderEntries(cachedEntries);
 };
 
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
 const setAuthState = (session) => {
   const user = session?.user;
   const isAdmin = user && user.email === ADMIN_EMAIL;
@@ -164,6 +120,8 @@ signOutBtn.addEventListener("click", async () => {
   setAuthState(null);
 });
 
+// ─── Toggle visibility ────────────────────────────────────────────────────────
+
 entriesEl.addEventListener("click", async (event) => {
   const button = event.target.closest("[data-toggle-id]");
   if (!button) return;
@@ -192,6 +150,8 @@ entriesEl.addEventListener("click", async (event) => {
   renderEntries(cachedEntries);
 });
 
+// ─── Search ───────────────────────────────────────────────────────────────────
+
 adminSearch.addEventListener("input", (event) => {
   const value = event.target.value.toLowerCase();
   const filtered = cachedEntries.filter((entry) => {
@@ -202,6 +162,8 @@ adminSearch.addEventListener("input", (event) => {
   });
   renderEntries(filtered);
 });
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
 
 client.auth.getSession().then(({ data }) => {
   setAuthState(data.session);

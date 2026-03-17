@@ -18,15 +18,37 @@
     <header class="hero">
       <div class="hero__content">
         <p class="tag">Lärmprotokoll · Sternbrücke</p>
-        <h1>Gemeinsame Dokumentation von Baulärm</h1>
-        <p class="subtitle">
-          Wir sammeln Belege (Video, Foto oder Audio), um die Belastung für
-          500 Wohnungen zu dokumentieren und eine Mietminderung zu begründen.
+        <h1>Unsere Ruhe, unsere Rechte</h1>
+        <p class="subtitle">Gemeinsam gegen den 24-Stunden-Baulärm.</p>
+        <p class="hero__body">
+          Seit Jahren belastet die Baustelle an der Sternbrücke den Alltag von über 500 Haushalten.
+          Ohne lückenlose Beweise haben wir gegenüber Behörden und Vermietern kaum eine Chance.
+          Diese Plattform ist unser gemeinsames Werkzeug, um die Lärmbelastung rund um die Uhr
+          sichtbar zu machen.
         </p>
-        <div class="hero__chips">
-          <span>Transparent</span>
-          <span>Für alle Nachbarn</span>
-          <span>Nach Datum sortiert</span>
+        <p class="hero__why">Warum mitmachen?</p>
+        <div class="hero__steps">
+          <div class="hero__step">
+            <span class="hero__step-number">1</span>
+            <div>
+              <strong>Beweise sichern</strong>
+              <p>Dokumentiere Lärmspitzen mit Video, Foto oder Audio.</p>
+            </div>
+          </div>
+          <div class="hero__step">
+            <span class="hero__step-number">2</span>
+            <div>
+              <strong>Mietminderung durchsetzen</strong>
+              <p>Erstelle mit deinen Daten ein rechtssicheres Protokoll für deinen Vermieter.</p>
+            </div>
+          </div>
+          <div class="hero__step">
+            <span class="hero__step-number">3</span>
+            <div>
+              <strong>Gemeinsam stärker</strong>
+              <p>Je mehr Nachbarn berichten, desto schwerer ist unser Protest zu ignorieren.</p>
+            </div>
+          </div>
         </div>
       </div>
       <div class="hero__panel">
@@ -39,14 +61,15 @@
               placeholder="z. B. Ständiges Hämmern, starke Vibrationen."></textarea>
           </div>
 
+          <!-- Fix: options aligned with filter dropdown exactly -->
           <div class="form-group">
             <label for="noise_type">Lärmtyp (optional)</label>
             <select id="noise_type" name="noise_type">
               <option value="">Bitte auswählen</option>
               <option value="Bohren">Bohren</option>
               <option value="Hämmern">Hämmern</option>
-              <option value="Abriss">Abriss</option>
-              <option value="Warnsignale">Warnsignale</option>
+              <option value="Abriss/Abbruch">Abriss/Abbruch</option>
+              <option value="Warnsignale/Piepen">Warnsignale/Piepen</option>
               <option value="Sägen">Sägen</option>
               <option value="Vibrationen">Vibrationen</option>
               <option value="Maschinenlärm">Maschinenlärm</option>
@@ -55,11 +78,11 @@
             </select>
           </div>
 
-          <!-- 2. La evidencia -->
+          <!-- 2. La evidencia — Fix: label shows it's required -->
           <div class="form-group">
-            <label>Datei (Video, Foto oder Audio)</label>
+            <label>Datei <span class="required-mark">*</span> (Video, Foto oder Audio)</label>
             <button type="button" id="upload_widget_opener" class="secondary">
-              Datei auswählen & hochladen
+              Datei auswählen &amp; hochladen
             </button>
             <p class="helper" id="fileStatus">
               Hinweis: Bitte Videos auf 30 Sek. begrenzen. Max: 100MB (V), 10MB (F), 60MB (A).
@@ -70,6 +93,7 @@
           <div class="form__row">
             <div class="form-group">
               <label for="event_date">Datum (optional)</label>
+              <!-- Fix: max is set dynamically via JS to today's date -->
               <input type="date" id="event_date" name="event_date" />
             </div>
             <div class="form-group">
@@ -80,24 +104,14 @@
 
           <!-- 4. Identidad -->
           <div class="form-group">
-            <label for="display_name">Öffentlicher Name (Pseudonym oder Kennung)</label>
-            <input
-              type="text"
-              id="display_name"
-              name="display_name"
-              placeholder="z. B. 3. OG · Marta"
-              required
-            />
+            <label for="display_name">Öffentlicher Name</label>
+            <input type="text" id="display_name" name="display_name" placeholder="z. B. Marta H. oder A. Müller"
+              required />
           </div>
 
           <div class="form-group">
             <label for="full_address">Vollständige Anschrift (nicht öffentlich)</label>
-            <input
-              type="text"
-              id="full_address"
-              name="full_address"
-              placeholder="Straße, Hausnr., PLZ, Ort, Etage"
-            />
+            <input type="text" id="full_address" name="full_address" placeholder="" />
             <p class="helper">
               Deine Adresse wird nicht öffentlich angezeigt. Sie dient nur der rechtlichen
               Gültigkeit deines persönlichen Protokolls.
@@ -126,32 +140,40 @@
     <section class="board">
       <div class="board__header">
         <div>
-          <div class="stats-bar">
-            <div class="stat-item">
-              <span id="totalReports" class="stat-value">0</span>
-              <span class="stat-label">Belege gesamt</span>
-            </div>
-          </div>
+          <span id="totalReports" class="stat-value">0</span>
+          <span class="stat-label"> Belege</span>
           <h2>Neueste Belege</h2>
-          <p>Echte Dokumentation der Nachbarschaft.</p>
-        </div>
-        <div class="filters">
-          <select id="noiseFilter">
-            <option value="">Alle Lärmtypen</option>
-            <option value="Bohren">Bohren</option>
-            <option value="Hämmern">Hämmern</option>
-            <option value="Abriss/Abbruch">Abriss/Abbruch</option>
-            <option value="Warnsignale/Piepen">Warnsignale/Piepen</option>
-            <option value="Sägen">Sägen</option>
-            <option value="Vibrationen">Vibrationen</option>
-            <option value="Maschinenlärm">Maschinenlärm</option>
-            <option value="Verkehr/Anlieferung">Verkehr/Anlieferung</option>
-            <option value="Sonstiges">Sonstiges</option>
-          </select>
         </div>
       </div>
 
       <div id="entries" class="entries"></div>
+    </section>
+
+    <!-- Mi Protocolo Personal -->
+    <section class="personal-protocol">
+      <div class="personal-protocol__content">
+        <h2>Mein persönliches Protokoll</h2>
+        <div id="protocol-loading" class="helper" style="display: none">Lädt...</div>
+
+        <!-- Login Section -->
+        <div id="protocol-login">
+          <p>Gib deine E-Mail-Adresse ein, um einen sicheren Zugangslink zu erhalten. Du kannst dann alle deine gemeldeten Belege ansehen und als PDF speichern.</p>
+          <div class="search-box">
+            <input type="email" id="email-consulta" placeholder="marta@email.com" />
+            <button type="button" id="btn-magic-link" class="primary">Zugangslink anfordern</button>
+          </div>
+          <p id="magic-link-status" class="helper"></p>
+        </div>
+
+        <!-- Authenticated Section -->
+        <div id="protocol-authenticated" style="display: none">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <p id="user-greeting" style="margin: 0; font-weight: 600;"></p>
+            <button type="button" id="btn-logout" class="secondary" style="padding: 8px 16px; font-size: 0.8rem;">Abmelden</button>
+          </div>
+          <div id="lista-resultados" class="search-results"></div>
+        </div>
+      </div>
     </section>
 
     <section class="info">
@@ -162,15 +184,15 @@
           öffentlich, damit die Nachbarschaft sie im Lärmprotokoll nutzen kann.
         </p>
       </div>
-        <div>
-          <h3>Anonymität & Beweiskraft</h3>
-          <p>
-            Für die öffentliche Anzeige kannst du ein Pseudonym verwenden.
-            Wichtig: Für eine Mietminderung oder rechtliche Schritte müssen gegenüber
-            Vermieter oder Behörden der volle Name und die vollständige Anschrift
-            (Straße, Hausnummer, Etage) angegeben werden.
-          </p>
-        </div>
+      <div>
+        <h3>Anonymität &amp; Beweiskraft</h3>
+        <p>
+          Für die öffentliche Anzeige kannst du ein Pseudonym verwenden.
+          Wichtig: Für eine Mietminderung oder rechtliche Schritte müssen gegenüber
+          Vermieter oder Behörden der volle Name und die vollständige Anschrift
+          (Straße, Hausnummer, Etage) angegeben werden.
+        </p>
+      </div>
       <div>
         <h3>Datenschutz</h3>
         <p>
@@ -215,7 +237,9 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Fix: Cloudinary loaded only once here (removed dynamic re-load from app.js) -->
   <script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
+  <script src="utils.js"></script>
   <script src="app.js"></script>
 </body>
 
