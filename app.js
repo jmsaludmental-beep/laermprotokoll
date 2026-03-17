@@ -15,7 +15,7 @@ const uploadWidgetOpener = document.getElementById("upload_widget_opener");
 
 let cachedEntries = [];
 let uploadedAsset = null;
-const MAX_VIDEO_MB = 60;
+const MAX_VIDEO_MB = 100;
 const MAX_IMAGE_MB = 10;
 const MAX_AUDIO_MB = 60;
 const MAX_VIDEO_SECONDS = 30;
