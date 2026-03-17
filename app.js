@@ -17,7 +17,7 @@ let cachedEntries = [];
 let uploadedAsset = null;
 const MAX_VIDEO_MB = 60;
 const MAX_IMAGE_MB = 10;
-const MAX_AUDIO_MB = 10;
+const MAX_AUDIO_MB = 60;
 const MAX_VIDEO_SECONDS = 30;
 const AUDIO_FORMATS = new Set(["mp3", "m4a", "wav", "ogg", "aac", "flac"]);
 
@@ -117,7 +117,7 @@ const buildUploadWidget = () => {
       resourceType: "auto",
       maxImageFileSize: MAX_IMAGE_MB * 1024 * 1024,
       maxVideoFileSize: MAX_VIDEO_MB * 1024 * 1024,
-      maxFileSize: MAX_AUDIO_MB * 1024 * 1024,
+      maxFileSize: MAX_VIDEO_MB * 1024 * 1024,
       clientAllowedFormats: [
         "jpg",
         "jpeg",
@@ -149,6 +149,14 @@ const buildUploadWidget = () => {
           bytes: info.bytes,
           duration: info.duration,
         };
+
+        const sizeMb = info.bytes / (1024 * 1024);
+        if (AUDIO_FORMATS.has(info.format) && sizeMb > MAX_AUDIO_MB) {
+          fileStatusEl.textContent =
+            "Audio ist zu groß. Bitte kürzere Aufnahme hochladen.";
+          uploadedAsset = null;
+          return;
+        }
 
         if (
           info.resource_type === "video" &&
