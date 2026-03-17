@@ -36,6 +36,7 @@ const modalClose = document.querySelector(".modal-close");
 let cachedEntries = [];
 let uploadedAsset = null;
 let currentUserEmail = null;
+let userOwnedIds = new Set();
 const MAX_VIDEO_MB = 100;
 const MAX_IMAGE_MB = 10;
 const MAX_AUDIO_MB = 60;
@@ -71,7 +72,7 @@ const renderEntries = (items) => {
         ? `<span class="entry__badge">${escapeHtml(item.noise_type)}</span>`
         : "";
 
-      const isOwner = currentUserEmail && item.email === currentUserEmail;
+      const isOwner = userOwnedIds.has(item.id);
       const editButton = isOwner 
         ? `<button class="btn-edit-trigger" style="margin-top: 12px;" onclick="handleEditEntry('${item.id}')">Bearbeiten</button>` 
         : "";
@@ -254,7 +255,7 @@ const loadEntries = async () => {
 
   const { data, error } = await client
     .from("public_entries")
-    .select("id, created_at, description, noise_type, event_date, event_time, file_url, file_type, neighbor, email")
+    .select("id, created_at, description, noise_type, event_date, event_time, file_url, file_type, neighbor")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -281,6 +282,7 @@ const toggleProtocolStates = (session) => {
     renderEntries(cachedEntries);
   } else {
     currentUserEmail = null;
+    userOwnedIds.clear();
     if (protocolLogin) protocolLogin.style.display = "block";
     if (protocolAuthenticated) protocolAuthenticated.style.display = "none";
     if (listaResultados) listaResultados.innerHTML = "";
@@ -339,7 +341,15 @@ const consultarMisReportes = async (email) => {
 
     if (error) throw error;
 
+    // Populate userOwnedIds set
+    userOwnedIds.clear();
+    if (data) {
+      data.forEach(item => userOwnedIds.add(item.id));
+    }
+
     renderPersonalReports(data || []);
+    // Re-render public feed to show edit buttons
+    renderEntries(cachedEntries);
   } catch (error) {
     console.error(error);
     listaResultados.innerHTML =
