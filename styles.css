@@ -60,7 +60,8 @@ p {
 .page {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 64px 24px 80px;
+  padding: 32px 24px 80px;
+  position: relative;
 }
 
 .admin-page {
@@ -79,7 +80,6 @@ p {
 
 .hero__content {
   padding-right: 20px;
-  padding-top: 20px;
 }
 
 .tag {
@@ -923,8 +923,8 @@ select:focus {
 /* ─── Top Admin/Home Link ─────────────────────────────────────────────────── */
 .admin-link-top {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 0;
+  right: -60px;
   background: white;
   color: var(--muted);
   text-decoration: none;
@@ -939,6 +939,12 @@ select:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media (max-width: 1400px) {
+  .admin-link-top {
+    right: 20px;
+  }
 }
 
 .admin-link-top:hover {
