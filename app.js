@@ -115,13 +115,16 @@ const renderPersonalReports = (items) => {
         : "";
 
       return `
-      <div class="result-card">
+      <div class="result-card" data-card-id="${item.id}">
         <div class="meta">${fecha}</div>
         <h4>${escapeHtml(item.noise_type || "Baulärm")}</h4>
         <div class="entry__meta" style="margin-bottom: 8px;">👤 ${escapeHtml(item.neighbor || "Nachbar:in")}</div>
         ${address}
-        <p class="desc">${escapeHtml(item.description)}</p>
+        <div class="desc-container">
+          <p class="desc">${escapeHtml(item.description)}</p>
+        </div>
         ${media}
+        <button class="btn-edit-trigger" onclick="handleEditEntry('${item.id}')">Bearbeiten</button>
       </div>
     `;
     })
