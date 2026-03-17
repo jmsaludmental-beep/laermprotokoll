@@ -9,9 +9,10 @@ const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const form = document.getElementById("uploadForm");
 const statusEl = document.getElementById("uploadStatus");
 const entriesEl = document.getElementById("entries");
-const searchInput = document.getElementById("searchInput");
 const fileStatusEl = document.getElementById("fileStatus");
 const uploadWidgetOpener = document.getElementById("upload_widget_opener");
+const noiseFilter = document.getElementById("noiseFilter");
+const totalReportsEl = document.getElementById("totalReports");
 
 let cachedEntries = [];
 let uploadedAsset = null;
@@ -62,16 +63,14 @@ const renderEntries = (items) => {
         item.event_date || item.event_time
           ? `<p class="entry__meta">Zeitpunkt: ${formatEventDateTime(item)}</p>`
           : "";
+      const neighborLine = `<p class="entry__meta">Gemeldet von: ${escapeHtml(item.neighbor || "Anonyme:r Nachbar:in")}</p>`;
       return `
       <article class="entry" data-entry-id="${item.id}">
-        <div>
-          <h3>${escapeHtml(item.neighbor)}</h3>
-          <p class="entry__meta">${formatDateTime(item.created_at)}</p>
-        </div>
-        ${noiseLine}
         ${eventLine}
-        <p>${escapeHtml(item.description)}</p>
+        ${noiseLine}
         ${media}
+        <p>${escapeHtml(item.description)}</p>
+        ${neighborLine}
         <button class="report-button" type="button" data-report-id="${item.id}">
           Inhalt melden
         </button>
@@ -79,6 +78,10 @@ const renderEntries = (items) => {
     `;
     })
     .join("");
+
+  // Update total count
+  const nonHidden = cachedEntries.filter(e => !e.hidden).length;
+  if (totalReportsEl) totalReportsEl.textContent = nonHidden;
 };
 
 const renderMedia = (item) => {
@@ -243,14 +246,15 @@ form.addEventListener("submit", async (event) => {
   statusEl.textContent = "Eintrag wird gespeichert...";
 
   const formData = new FormData(form);
-  const neighbor = formData.get("neighbor").trim();
+  const neighbor = formData.get("neighbor").trim() || "Anonym";
   const email = formData.get("email").trim();
   const description = formData.get("description").trim();
   const noiseType = formData.get("noise_type").trim();
   const eventDate = formData.get("event_date");
   const eventTime = formData.get("event_time");
-  if (!neighbor || !description) {
-    statusEl.textContent = "Bitte alle Pflichtfelder ausfüllen.";
+  if (!description || !eventDate || !eventTime) {
+    statusEl.textContent = "Bitte eine Beschreibung, Datum und Uhrzeit eingeben.";
+    statusEl.className = "helper error";
     return;
   }
 
@@ -281,26 +285,34 @@ form.addEventListener("submit", async (event) => {
     if (error) throw error;
 
     statusEl.textContent = "Eintrag gespeichert. Danke!";
+    statusEl.className = "helper success";
     form.reset();
     uploadedAsset = null;
     fileStatusEl.textContent = "Hinweis: Bitte Videos auf 30 Sekunden begrenzen.";
+    fileStatusEl.className = "helper";
     await loadEntries();
+
+    setTimeout(() => {
+      statusEl.textContent = "";
+      statusEl.className = "helper";
+    }, 5000);
   } catch (error) {
     statusEl.textContent = "Upload fehlgeschlagen. Bitte in ein paar Minuten erneut versuchen.";
+    statusEl.className = "helper error";
     console.error(error);
   }
 });
 
-searchInput.addEventListener("input", (event) => {
-  const value = event.target.value.toLowerCase();
+const applyFilters = () => {
+  const typeFilter = noiseFilter.value;
+
   const filtered = cachedEntries.filter((entry) => {
-    return (
-      entry.neighbor.toLowerCase().includes(value) ||
-      entry.description.toLowerCase().includes(value)
-    );
+    return !typeFilter || entry.noise_type === typeFilter;
   });
   renderEntries(filtered);
-});
+};
+
+noiseFilter.addEventListener("change", applyFilters);
 
 entriesEl.addEventListener("click", async (event) => {
   const button = event.target.closest(".report-button");

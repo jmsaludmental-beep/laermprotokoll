@@ -73,6 +73,38 @@ $$;
 grant execute on function public.report_entry(uuid) to anon, authenticated;
 ```
 
+## Admin-Login (Moderation)
+
+1. In Supabase → **Authentication → Users** einen Benutzer anlegen:
+   - E-Mail: `sternbruecke.laerm@gmail.com`
+   - Passwort setzen
+2. RLS-Policies anpassen (damit Admin alles sehen und ausblenden kann):
+
+```sql
+drop policy if exists "public read" on public.entries;
+drop policy if exists "public read visible" on public.entries;
+drop policy if exists "public insert" on public.entries;
+drop policy if exists "admin select all" on public.entries;
+drop policy if exists "admin update" on public.entries;
+
+create policy "public read visible" on public.entries
+for select using (hidden = false);
+
+create policy "public insert" on public.entries
+for insert with check (true);
+
+create policy "admin select all" on public.entries
+for select to authenticated
+using ((auth.jwt() ->> 'email') = 'sternbruecke.laerm@gmail.com');
+
+create policy "admin update" on public.entries
+for update to authenticated
+using ((auth.jwt() ->> 'email') = 'sternbruecke.laerm@gmail.com')
+with check ((auth.jwt() ->> 'email') = 'sternbruecke.laerm@gmail.com');
+```
+
+3. Admin-Seite: `admin.html`
+
 ## 2) Cloudinary einrichten
 
 1. Cloudinary-Konto erstellen.

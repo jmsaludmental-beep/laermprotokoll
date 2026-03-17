@@ -1,115 +1,52 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lärmprotokoll Hamburg · Baulärm-Dokumentation</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <main class="page">
-      <header class="hero">
-        <div class="hero__content">
-          <p class="tag">Lärmprotokoll · Hamburg</p>
-          <h1>Gemeinsame Dokumentation von Baulärm</h1>
-          <p class="subtitle">
-            Wir sammeln Belege (Video, Foto oder Audio), um die Belastung für
-            500 Wohnungen zu dokumentieren und eine Mietminderung zu begründen.
-          </p>
-          <div class="hero__chips">
-            <span>Transparent</span>
-            <span>Für alle Nachbarn</span>
-            <span>Nach Datum sortiert</span>
-          </div>
-        </div>
-        <div class="hero__panel">
-          <h2>Beleg hochladen</h2>
-          <form id="uploadForm" class="form">
-            <label>
-              Nachbar:in (Kennung oder anonym)
-              <input type="text" name="neighbor" placeholder="z. B. 3. OG · Pseudonym" />
-            </label>
-            <label>
-              E-Mail (optional)
-              <input type="email" name="email" placeholder="marta@email.com" />
-            </label>
-            <p class="helper">
-              Wir zeigen E-Mails nicht öffentlich. Nur für Rückfragen, falls nötig.
-            </p>
-            <label>
-              Kurze Beschreibung
-              <textarea
-                name="description"
-                rows="3"
-                required
-                placeholder="z. B. Ständiges Hämmern, starke Vibrationen."
-              ></textarea>
-            </label>
-            <label>
-              Lärmtyp (optional)
-              <select name="noise_type">
-                <option value="">Bitte auswählen</option>
-                <option value="Bohren">Bohren</option>
-                <option value="Hämmern">Hämmern</option>
-                <option value="Sägen">Sägen</option>
-                <option value="Vibrationen">Vibrationen</option>
-                <option value="Maschinenlärm">Maschinenlärm</option>
-                <option value="Verkehr/Anlieferung">Verkehr/Anlieferung</option>
-                <option value="Sonstiges">Sonstiges</option>
-              </select>
-            </label>
-            <div class="form__row">
-              <label>
-                Datum des Lärms (optional)
-                <input type="date" name="event_date" />
-              </label>
-              <label>
-                Uhrzeit des Lärms (optional)
-                <input type="time" name="event_time" />
-              </label>
-            </div>
-            <label>
-              Datei (Video, Foto oder Audio)
-              <button type="button" id="upload_widget_opener" class="secondary">
-                Datei auswählen & hochladen
-              </button>
-            </label>
-            <p class="helper" id="fileStatus">
-              Hinweis: Bitte Videos auf 30 Sekunden begrenzen.
-            </p>
-            <label class="inline">
-              <input type="checkbox" name="consent" required />
-              Ich bestätige, dass dieses Material echt ist und die Baustelle betrifft.
-            </label>
-            <button type="submit" class="primary">Eintrag speichern</button>
-            <p class="helper" id="uploadStatus"></p>
-          </form>
-        </div>
-      </header>
 
-      <section class="board">
-        <div class="board__header">
-          <div>
-            <div class="stats-bar">
-              <div class="stat-item">
-                <span id="totalReports" class="stat-value">0</span>
-                <span class="stat-label">Belege gesamt</span>
-              </div>
-            </div>
-            <h2>Neueste Belege</h2>
-            <p>Echte Dokumentation der Nachbarschaft.</p>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lärmprotokoll Hamburg · Baulärm-Dokumentation</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap"
+    rel="stylesheet" />
+</head>
+
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="hero__content">
+        <p class="tag">Lärmprotokoll · Sternbrücke</p>
+        <h1>Gemeinsame Dokumentation von Baulärm</h1>
+        <p class="subtitle">
+          Wir sammeln Belege (Video, Foto oder Audio), um die Belastung für
+          500 Wohnungen zu dokumentieren und eine Mietminderung zu begründen.
+        </p>
+        <div class="hero__chips">
+          <span>Transparent</span>
+          <span>Für alle Nachbarn</span>
+          <span>Nach Datum sortiert</span>
+        </div>
+      </div>
+      <div class="hero__panel">
+        <h2>Beleg hochladen</h2>
+        <form id="uploadForm" class="form">
+          <!-- 1. El incidente -->
+          <div class="form-group">
+            <label for="description">Kurze Beschreibung</label>
+            <textarea id="description" name="description" rows="3" required
+              placeholder="z. B. Ständiges Hämmern, starke Vibrationen."></textarea>
           </div>
-          <div class="filters">
-            <select id="noiseFilter">
-              <option value="">Alle Lärmtypen</option>
+
+          <div class="form-group">
+            <label for="noise_type">Lärmtyp (optional)</label>
+            <select id="noise_type" name="noise_type">
+              <option value="">Bitte auswählen</option>
               <option value="Bohren">Bohren</option>
               <option value="Hämmern">Hämmern</option>
+              <option value="Abriss">Abriss</option>
+              <option value="Warnsignale">Warnsignale</option>
               <option value="Sägen">Sägen</option>
               <option value="Vibrationen">Vibrationen</option>
               <option value="Maschinenlärm">Maschinenlärm</option>
@@ -117,64 +54,148 @@
               <option value="Sonstiges">Sonstiges</option>
             </select>
           </div>
-        </div>
 
-        <div id="entries" class="entries"></div>
-      </section>
+          <!-- 2. La evidencia -->
+          <div class="form-group">
+            <label>Datei (Video, Foto oder Audio)</label>
+            <button type="button" id="upload_widget_opener" class="secondary">
+              Datei auswählen & hochladen
+            </button>
+            <p class="helper" id="fileStatus">
+              Hinweis: Bitte Videos auf 30 Sek. begrenzen. Max: 100MB (V), 10MB (F), 60MB (A).
+            </p>
+          </div>
 
-      <section class="info">
-        <div>
-          <h3>Wie funktioniert das?</h3>
-          <p>
-            Jeder Upload speichert automatisch Datum und Uhrzeit. Die Inhalte bleiben
-            öffentlich, damit die Nachbarschaft sie im Lärmprotokoll nutzen kann.
-          </p>
-        </div>
-        <div>
-          <h3>Zeugen & Beweiswert</h3>
-          <p>
-            Anonyme Meldungen sind möglich, haben aber vor Gericht geringeren Wert.
-            Für eine festsitzende Mietminderung sind Zeugen mit Namen oft notwendig.
-          </p>
-        </div>
-        <div>
-          <h3>Datenschutz</h3>
-          <p>
-            Bitte keine Gesichter Dritter aufnehmen. Wenn nötig, nutze eine Kennung
-            statt vollständigem Namen.
-          </p>
-          <p>
-            E-Mails werden nicht öffentlich angezeigt und nur für Rückfragen verwendet,
-            falls erforderlich.
-          </p>
-        </div>
-      </section>
+          <!-- 3. Tiempo -->
+          <div class="form__row">
+            <div class="form-group">
+              <label for="event_date">Datum</label>
+              <input type="date" id="event_date" name="event_date" required />
+            </div>
+            <div class="form-group">
+              <label for="event_time">Uhrzeit</label>
+              <input type="time" id="event_time" name="event_time" required />
+            </div>
+          </div>
 
-      <section class="info">
-        <div>
-          <h3>Impressum</h3>
-          <p>Angaben gemäß § 5 TMG</p>
-          <p>Verantwortlich: Jose Munoz</p>
-          <p>Anschrift: Stresemannstr. 118, 22769 Hamburg</p>
-          <p>Kontakt: sternbruecke.laerm@gmail.com</p>
-        </div>
-        <div>
-          <h3>Haftung</h3>
-          <p>
-            Trotz sorgfältiger Prüfung übernehmen wir keine Haftung für Inhalte externer
-            Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber
-            verantwortlich.
-          </p>
-        </div>
-      </section>
-    </main>
+          <!-- 4. Identidad -->
+          <div class="form-group">
+            <label for="neighbor">Nachbar:in</label>
+            <input type="text" id="neighbor" name="neighbor" placeholder="z. B. Marta G. oder M. Müller" />
+            <p class="helper">Wichtig: Für volle rechtliche Gültigkeit ist der echte Name oft nötig.</p>
+          </div>
 
-    <footer class="footer">
-      <p>Erstellt von der Nachbarschaft · Hamburg</p>
-    </footer>
+          <div class="form-group">
+            <label for="email">E-Mail (optional)</label>
+            <input type="email" id="email" name="email" placeholder="marta@email.com" />
+            <p class="helper">Wird nicht öffentlich gezeigt. Nur für Rückfragen.</p>
+          </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
-    <script src="app.js"></script>
-  </body>
+          <div class="form-group">
+            <label class="inline">
+              <input type="checkbox" name="consent" required />
+              <span>Ich bestätige, dass dieses Material echt ist.</span>
+            </label>
+          </div>
+
+          <button type="submit" class="primary">Eintrag speichern</button>
+          <p class="helper" id="uploadStatus"></p>
+        </form>
+      </div>
+    </header>
+
+    <section class="board">
+      <div class="board__header">
+        <div>
+          <div class="stats-bar">
+            <div class="stat-item">
+              <span id="totalReports" class="stat-value">0</span>
+              <span class="stat-label">Belege gesamt</span>
+            </div>
+          </div>
+          <h2>Neueste Belege</h2>
+          <p>Echte Dokumentation der Nachbarschaft.</p>
+        </div>
+        <div class="filters">
+          <select id="noiseFilter">
+            <option value="">Alle Lärmtypen</option>
+            <option value="Bohren">Bohren</option>
+            <option value="Hämmern">Hämmern</option>
+            <option value="Abriss/Abbruch">Abriss/Abbruch</option>
+            <option value="Warnsignale/Piepen">Warnsignale/Piepen</option>
+            <option value="Sägen">Sägen</option>
+            <option value="Vibrationen">Vibrationen</option>
+            <option value="Maschinenlärm">Maschinenlärm</option>
+            <option value="Verkehr/Anlieferung">Verkehr/Anlieferung</option>
+            <option value="Sonstiges">Sonstiges</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="entries" class="entries"></div>
+    </section>
+
+    <section class="info">
+      <div>
+        <h3>Wie funktioniert das?</h3>
+        <p>
+          Jeder Upload speichert automatisch Datum und Uhrzeit. Die Inhalte bleiben
+          öffentlich, damit die Nachbarschaft sie im Lärmprotokoll nutzen kann.
+        </p>
+      </div>
+      <div>
+        <h3>Zeugen & Beweiswert</h3>
+        <p>
+          Anonyme Meldungen sind möglich, haben aber vor Gericht geringeren Wert.
+          Für eine festsitzende Mietminderung sind Zeugen mit Namen oft notwendig.
+        </p>
+      </div>
+      <div>
+        <h3>Datenschutz</h3>
+        <p>
+          Bitte keine Gesichter Dritter aufnehmen. Wenn nötig, nutze eine Kennung
+          statt vollständigem Namen.
+        </p>
+        <p>
+          Bitte keine erkennbaren Gesichter oder Kfz‑Kennzeichen veröffentlichen.
+          Die Videos werden komprimiert, damit der Kontext erkennbar bleibt, jedoch
+          Gesichter und Kennzeichen möglichst unleserlich sind. Bei Nahaufnahmen
+          können Personen trotzdem erkennbar sein – bitte entsprechend aufnehmen
+          oder vor dem Upload unkenntlich machen.
+        </p>
+        <p>
+          E-Mails werden nicht öffentlich angezeigt und nur für Rückfragen verwendet,
+          falls erforderlich.
+        </p>
+      </div>
+    </section>
+
+    <section class="info">
+      <div>
+        <h3>Impressum</h3>
+        <p>Angaben gemäß § 5 TMG</p>
+        <p>Verantwortlich: Jose Munoz</p>
+        <p>Anschrift: Stresemannstr. 118, 22769 Hamburg</p>
+        <p>Kontakt: sternbruecke.laerm@gmail.com</p>
+      </div>
+      <div>
+        <h3>Haftung</h3>
+        <p>
+          Trotz sorgfältiger Prüfung übernehmen wir keine Haftung für Inhalte externer
+          Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber
+          verantwortlich.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Erstellt von der Nachbarschaft · Hamburg · <a class="footer__link" href="admin.html">Admin</a></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
+  <script src="app.js"></script>
+</body>
+
 </html>
