@@ -111,10 +111,9 @@
 
           <div class="form-group">
             <label for="full_address">Vollständige Anschrift (nicht öffentlich)</label>
-            <input type="text" id="full_address" name="full_address" placeholder="" />
+            <input type="text" id="full_address" name="full_address" placeholder="Straße, Hausnr., Etage" />
             <p class="helper">
-              Deine Adresse wird nicht öffentlich angezeigt. Sie dient nur der rechtlichen
-              Gültigkeit deines persönlichen Protokolls.
+              Wird <strong>niemals</strong> öffentlich angezeigt. Diese Info ist nur für dein persönliches Protokoll (z. B. für Mietminderungen) nötig.
             </p>
           </div>
 
@@ -157,7 +156,7 @@
 
         <!-- Login Section -->
         <div id="protocol-login">
-          <p>Gib deine E-Mail-Adresse ein, um einen sicheren Zugangslink zu erhalten. Du kannst dann alle deine gemeldeten Belege ansehen und als PDF speichern. Aus Datenschutzgründen hast du nur auf deine eigenen detaillierten Daten Zugriff; alle Meldungen sind jedoch ohne sensible Informationen auf dem öffentlichen Board einsehbar.</p>
+          <p>Fordere einen Zugangslink an, um deine Belege als PDF zu speichern. Deine sensiblen Daten (Adresse/Email) sind nur hier für dich sichtbar; auf dem öffentlichen Board bleiben alle Meldungen anonym.</p>
           <div class="search-box">
             <input type="email" id="email-consulta" placeholder="marta@email.com" />
             <button type="button" id="btn-magic-link" class="primary">Zugangslink anfordern</button>
@@ -180,54 +179,41 @@
       <div>
         <h3>Wie funktioniert das?</h3>
         <p>
-          Jeder Upload speichert automatisch Datum und Uhrzeit. Die Inhalte bleiben
-          öffentlich, damit die Nachbarschaft sie im Lärmprotokoll nutzen kann.
+          Jeder Upload speichert automatisch das aktuelle Datum und die Uhrzeit. Die Beschreibungen und Medien sind öffentlich einsehbar, damit die Nachbarschaft sie gemeinsam für das Lärmprotokoll nutzen kann.
         </p>
       </div>
       <div>
         <h3>Anonymität &amp; Beweiskraft</h3>
         <p>
-          Für die öffentliche Anzeige kannst du ein Pseudonym verwenden.
-          Wichtig: Für eine Mietminderung oder rechtliche Schritte müssen gegenüber
-          Vermieter oder Behörden der volle Name und die vollständige Anschrift
-          (Straße, Hausnummer, Etage) angegeben werden.
+          Du kannst ein Pseudonym für die öffentliche Anzeige wählen. Für die rechtliche Gültigkeit gegenüber Vermietern oder Behörden (z. B. für eine Mietminderung) ist es jedoch zwingend erforderlich, im persönlichen Protokoll den vollen Namen und die Anschrift anzugeben.
         </p>
       </div>
       <div>
-        <h3>Datenschutz</h3>
+        <h3>Rechtlicher Hinweis</h3>
         <p>
-          Bitte keine Gesichter Dritter aufnehmen. Wenn nötig, nutze eine Kennung
-          statt vollständigem Namen.
-        </p>
-        <p>
-          Bitte keine erkennbaren Gesichter oder Kfz‑Kennzeichen veröffentlichen.
-          Die Videos werden komprimiert, damit der Kontext erkennbar bleibt, jedoch
-          Gesichter und Kennzeichen möglichst unleserlich sind. Bei Nahaufnahmen
-          können Personen trotzdem erkennbar sein – bitte entsprechend aufnehmen
-          oder vor dem Upload unkenntlich machen.
-        </p>
-        <p>
-          E-Mails werden nicht öffentlich angezeigt und nur für Rückfragen verwendet,
-          falls erforderlich.
+          Bitte achte darauf, keine Personen oder Kfz-Kennzeichen Dritter ohne deren Einwilligung aufzunehmen. Diese Plattform dient ausschließlich der Dokumentation von Baulärm.
         </p>
       </div>
     </section>
 
-    <section class="info">
+    <section class="info" id="legal">
       <div>
         <h3>Impressum</h3>
-        <p>Angaben gemäß § 5 TMG</p>
-        <p>Verantwortlich: Jose Munoz</p>
-        <p>Anschrift: Stresemannstr. 118, 22769 Hamburg</p>
-        <p>Kontakt: sternbruecke.laerm@gmail.com</p>
+        <p><strong>Angaben gemäß § 5 TMG:</strong></p>
+        <p>
+          Jose Munoz<br />
+          Stresemannstr. 118<br />
+          22769 Hamburg
+        </p>
+        <p><strong>Kontakt:</strong><br />E-Mail: sternbruecke.laerm@gmail.com</p>
       </div>
       <div>
-        <h3>Haftung</h3>
+        <h3>Datenschutzerklärung</h3>
         <p>
-          Trotz sorgfältiger Prüfung übernehmen wir keine Haftung für Inhalte externer
-          Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber
-          verantwortlich.
+          Wir verarbeiten deine Daten (E-Mail, Anschrift, Medien) nur zum Zweck der Lärmdokumentation.
         </p>
+        <p><strong>Hosting & Dienste:</strong> Die Daten werden bei <strong>Supabase Inc.</strong> (Datenbank & Auth) und <strong>Cloudinary Ltd.</strong> (Medien-Hosting) verarbeitet. Ein Zugriff durch Dritte erfolgt nicht, außer es ist zur Durchsetzung deiner Rechte (Mietminderung) von dir ausdrücklich gewollt.</p>
+        <p><strong>Deine Rechte:</strong> Du hast jederzeit das Recht auf Auskunft, Berichtigung oder Löschung deiner Daten gemäß DSGVO. Kontaktiere uns dazu einfach per E-Mail.</p>
       </div>
     </section>
   </main>
@@ -235,6 +221,14 @@
   <footer class="footer">
     <p>Erstellt von der Nachbarschaft · Hamburg · <a class="footer__link" href="admin.html">Admin</a></p>
   </footer>
+
+  <!-- Cookie Consent Banner -->
+  <div id="cookie-banner" class="cookie-banner" style="display: none;">
+    <div class="cookie-banner__content">
+      <p>Wir nutzen technisch notwendige Cookies für dein Protokoll. Details findest du im <a href="#legal" class="footer__link">Impressum</a>.</p>
+      <button id="btn-cookie-accept" class="primary" style="padding: 8px 20px; font-size: 0.85rem;">Verstanden</button>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Fix: Cloudinary loaded only once here (removed dynamic re-load from app.js) -->

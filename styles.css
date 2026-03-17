@@ -759,6 +759,50 @@ select:focus {
   line-height: 1.5;
 }
 
+/* ─── Cookie Banner ────────────────────────────────────────────────────────── */
+.cookie-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--stroke);
+  border-radius: 20px;
+  padding: 16px 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cookie-banner__content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.cookie-banner p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(100%) scale(0.95); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .cookie-banner__content {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
 /* ─── Print styles ─────────────────────────────────────────────────────────── */
 @media print {
   /* Hide UI elements and sections not needed for the report */
@@ -769,7 +813,8 @@ select:focus {
   .info,
   .search-box, 
   button,
-  .report-button {
+  .report-button,
+  .cookie-banner {
     display: none !important;
   }
 
@@ -815,7 +860,7 @@ select:focus {
   /* Force cards to be full width and professional */
   .result-card {
     border: 1px solid #ddd;
-    border-radius: 4px; /* Simpler borders for print */
+    border-radius: 4px;
     margin-bottom: 25px;
     padding: 20px;
     page-break-inside: avoid;
@@ -838,5 +883,86 @@ select:focus {
     text-decoration: none;
     color: #444;
     font-size: 0.8rem;
+  }
+}
+/* ─── Admin List ───────────────────────────────────────────────────────────── */
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.admin-item {
+  background: white;
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 180px 1fr 100px 120px;
+  align-items: center;
+  gap: 20px;
+  transition: var(--transition);
+}
+
+.admin-item:hover {
+  border-color: var(--stroke);
+  box-shadow: var(--shadow-sm);
+  background: #fdfcfb;
+}
+
+.admin-item .meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.admin-item strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.admin-item .noise-type {
+  font-size: 0.75rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.admin-item__desc {
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.admin-item__desc small {
+  color: var(--muted);
+}
+
+.admin-item__actions {
+  text-align: right;
+}
+
+.report-button.delete {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fecaca;
+  width: 100%;
+}
+
+.report-button.delete:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+@media (max-width: 900px) {
+  .admin-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .admin-item__actions {
+    text-align: left;
   }
 }

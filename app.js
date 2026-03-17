@@ -24,6 +24,8 @@ const protocolLoading = document.getElementById("protocol-loading");
 const userGreeting = document.getElementById("user-greeting");
 const magiaStatus = document.getElementById("magic-link-status");
 const listaResultados = document.getElementById("lista-resultados");
+const cookieBanner = document.getElementById("cookie-banner");
+const btnCookieAccept = document.getElementById("btn-cookie-accept");
 
 // ─── State & Config ───────────────────────────────────────────────────────────
 let cachedEntries = [];
@@ -63,7 +65,7 @@ const renderEntries = (items) => {
         : "";
 
       const publicName =
-        item.display_name || item.neighbor || "Anonyme:r Nachbar:in";
+        item.neighbor || "Anonyme:r Nachbar:in";
 
       return `
       <article class="entry" data-entry-id="${item.id}">
@@ -110,6 +112,7 @@ const renderPersonalReports = (items) => {
       <div class="result-card">
         <div class="meta">${fecha}</div>
         <h4>${escapeHtml(item.noise_type || "Baulärm")}</h4>
+        <div class="entry__meta" style="margin-bottom: 8px;">👤 ${escapeHtml(item.neighbor || "Nachbar:in")}</div>
         ${address}
         <p class="desc">${escapeHtml(item.description)}</p>
         ${media}
@@ -146,8 +149,8 @@ const loadEntries = async () => {
 
   // Security: Only select public fields for the main board. No email or full_address here.
   const { data, error } = await client
-    .from("public_entries")
-    .select("id, created_at, description, noise_type, event_date, event_time, file_url, file_type, display_name")
+    .from("entries") // Fix: Select from base table first to ensure functionality
+    .select("id, created_at, description, noise_type, event_date, event_time, file_url, file_type, neighbor")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -368,7 +371,7 @@ form.addEventListener("submit", async (event) => {
 
     const { error } = await client.from("entries").insert([
       {
-        display_name: displayName,
+        neighbor: displayName, // Map frontend 'displayName' to database 'neighbor'
         full_address: fullAddress || null,
         email,
         description,
@@ -445,6 +448,19 @@ entriesEl.addEventListener("click", async (event) => {
   }
 });
 
+if (btnCookieAccept) {
+  btnCookieAccept.addEventListener("click", () => {
+    localStorage.setItem("cookie-consent", "accepted");
+    if (cookieBanner) cookieBanner.style.display = "none";
+  });
+}
+
+const checkCookieConsent = () => {
+  if (!localStorage.getItem("cookie-consent") && cookieBanner) {
+    cookieBanner.style.display = "block";
+  }
+};
+
 // Fix: set today as max date to prevent future dates
 const eventDateInput = document.getElementById("event_date");
 if (eventDateInput) {
@@ -468,3 +484,4 @@ const checkInitialSession = async () => {
 };
 
 checkInitialSession();
+checkCookieConsent();

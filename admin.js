@@ -19,46 +19,39 @@ let cachedEntries = [];
 
 const renderEntries = (items) => {
   if (!items.length) {
-    entriesEl.innerHTML = "<div class='entry'>Keine Einträge gefunden.</div>";
+    entriesEl.innerHTML = "<div class='admin-item'>Keine Einträge gefunden.</div>";
     return;
   }
 
   entriesEl.innerHTML = items
     .map((item) => {
-      const eventLine =
-        item.event_date || item.event_time
-          ? `<p class="entry__meta">Zeitpunkt: ${formatEventDateTime(item)}</p>`
-          : `<p class="entry__meta">Zeitpunkt: (nicht angegeben)</p>`;
-      const noiseLine = item.noise_type
-        ? `<p class="entry__meta">Lärmtyp: ${escapeHtml(item.noise_type)}</p>`
-        : "";
-      const reported = Number(item.reported_count || 0);
-      const statusClass = item.hidden ? "status--hidden" : "status--visible";
-      const statusLabel = item.hidden ? "Ausgeblendet" : "Sichtbar";
-      const toggleLabel = item.hidden ? "Einblenden" : "Ausblenden";
+      const fecha = formatDateTime(item.created_at);
+      const name = item.neighbor || "Anonym";
+      const media = item.file_url 
+        ? `<a href="${item.file_url}" target="_blank" class="footer__link">Datei ↗</a>` 
+        : "Keine Datei";
+
       return `
-      <article class="entry" data-entry-id="${item.id}">
-        <div class="entry__meta-row">
-          <span class="status ${statusClass}">${statusLabel}</span>
-          <span class="status">Meldungen: ${reported}</span>
-          <span class="entry__meta">Upload: ${formatDateTime(item.created_at)}</span>
+      <div class="admin-item" data-entry-id="${item.id}">
+        <div class="admin-item__info">
+          <div class="meta">${fecha}</div>
+          <strong>${escapeHtml(name)}</strong>
+          <span class="noise-type">${escapeHtml(item.noise_type || "Allgemein")}</span>
         </div>
-        ${eventLine}
-        ${noiseLine}
-        ${renderMedia(item)}
-        <p>${escapeHtml(item.description)}</p>
-        <p class="entry__meta">Gemeldet von: ${escapeHtml(item.display_name || item.neighbor || "Anonyme:r Nachbar:in")}</p>
-        ${
-          item.full_address
-            ? `<p class="entry__meta">Adresse (privat): ${escapeHtml(item.full_address)}</p>`
-            : ""
-        }
-        <div class="entry__actions">
-          <button class="report-button" type="button" data-toggle-id="${item.id}">
-            ${toggleLabel}
+        <div class="admin-item__desc">
+          ${escapeHtml(item.description)}
+          ${item.full_address ? `<br><small>📍 ${escapeHtml(item.full_address)}</small>` : ""}
+          ${item.email ? `<br><small>📧 ${escapeHtml(item.email)}</small>` : ""}
+        </div>
+        <div class="admin-item__media">
+          ${media}
+        </div>
+        <div class="admin-item__actions">
+          <button class="report-button delete" type="button" data-delete-id="${item.id}">
+            Löschen
           </button>
         </div>
-      </article>
+      </div>
     `;
     })
     .join("");
@@ -120,33 +113,36 @@ signOutBtn.addEventListener("click", async () => {
   setAuthState(null);
 });
 
-// ─── Toggle visibility ────────────────────────────────────────────────────────
+// ─── Delete Entry ─────────────────────────────────────────────────────────────
 
 entriesEl.addEventListener("click", async (event) => {
-  const button = event.target.closest("[data-toggle-id]");
+  const button = event.target.closest("[data-delete-id]");
   if (!button) return;
 
-  const entryId = button.dataset.toggleId;
+  const entryId = button.dataset.deleteId;
   if (!entryId) return;
 
+  const confirmDelete = confirm("Möchtest du diesen Eintrag wirklich unwiderruflich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.");
+  if (!confirmDelete) return;
+
   button.disabled = true;
-  const entry = cachedEntries.find((item) => item.id === entryId);
-  const nextHidden = !(entry && entry.hidden);
+  button.textContent = "...";
 
   const { error } = await client
     .from("entries")
-    .update({ hidden: nextHidden })
+    .delete()
     .eq("id", entryId);
 
   if (error) {
     console.error(error);
+    alert("Fehler beim Löschen des Eintrags.");
     button.disabled = false;
+    button.textContent = "Löschen";
     return;
   }
 
-  cachedEntries = cachedEntries.map((item) =>
-    item.id === entryId ? { ...item, hidden: nextHidden } : item
-  );
+  // Update UI locally
+  cachedEntries = cachedEntries.filter((item) => item.id !== entryId);
   renderEntries(cachedEntries);
 });
 
@@ -156,7 +152,7 @@ adminSearch.addEventListener("input", (event) => {
   const value = event.target.value.toLowerCase();
   const filtered = cachedEntries.filter((entry) => {
     return (
-      (entry.display_name || entry.neighbor || "").toLowerCase().includes(value) ||
+      (entry.neighbor || "").toLowerCase().includes(value) ||
       (entry.description || "").toLowerCase().includes(value)
     );
   });

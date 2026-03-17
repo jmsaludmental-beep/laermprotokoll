@@ -16,46 +16,41 @@
     <main class="page admin-page">
       <header class="admin-header">
         <div>
-          <p class="tag">Admin · Lärmprotokoll</p>
-          <h1>Moderation & Übersicht</h1>
-          <p class="subtitle">
-            Hier kannst du Einträge prüfen und bei Bedarf ausblenden.
-          </p>
+          <h1>Admin-Login</h1>
         </div>
         <div>
-          <button id="signOutBtn" class="secondary" type="button">Abmelden</button>
+          <button id="signOutBtn" class="secondary" type="button" style="display: none;">Abmelden</button>
         </div>
       </header>
 
       <section class="admin-login" id="loginSection">
         <div class="hero__panel">
-          <h2>Admin-Login</h2>
           <form id="loginForm" class="form">
-            <label>
-              E-Mail
-              <input type="email" name="email" required />
-            </label>
-            <label>
-              Passwort
-              <input type="password" name="password" required />
-            </label>
+            <div class="form-group">
+              <label for="adminEmail">E-Mail</label>
+              <input type="email" id="adminEmail" name="email" required />
+            </div>
+            <div class="form-group">
+              <label for="adminPassword">Passwort</label>
+              <input type="password" id="adminPassword" name="password" required />
+            </div>
             <button type="submit" class="primary">Anmelden</button>
             <p class="helper" id="loginStatus"></p>
           </form>
         </div>
       </section>
 
-      <section class="admin-panel" id="panelSection">
+      <section class="admin-panel" id="panelSection" style="display: none;">
         <div class="board__header">
           <div>
             <h2>Alle Einträge</h2>
-            <p>Hier siehst du auch ausgeblendete Inhalte.</p>
+            <p>Listenansicht der Lärmberichte</p>
           </div>
           <div class="filters">
-            <input id="adminSearch" type="search" placeholder="Suche nach Nachbar:in oder Beschreibung" />
+            <input id="adminSearch" type="search" placeholder="Suche..." />
           </div>
         </div>
-        <div id="adminEntries" class="entries"></div>
+        <div id="adminEntries" class="admin-list"></div>
       </section>
     </main>
 
