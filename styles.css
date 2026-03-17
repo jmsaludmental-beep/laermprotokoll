@@ -14,6 +14,23 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.notice-box {
+  background: #f0f7ff;
+  border: 1px solid #d0e7ff;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 24px 0;
+  color: #2c5282;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.notice-box strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #2a4365;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -89,7 +106,23 @@ h1 {
 .subtitle {
   font-size: 1.25rem;
   max-width: 500px;
+  margin-bottom: 24px;
+  color: var(--ink);
+}
+
+.hero__body {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  max-width: 600px;
   margin-bottom: 32px;
+  color: var(--muted);
+}
+
+.hero__why {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
 }
 
 .hero__chips {
