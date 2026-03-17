@@ -29,6 +29,22 @@ const formatDateTime = (value) => {
   });
 };
 
+const formatEventDateTime = (item) => {
+  const parts = [];
+  if (item.event_date) {
+    const date = new Date(item.event_date);
+    parts.push(
+      date.toLocaleDateString("de-DE", {
+        dateStyle: "medium",
+      })
+    );
+  }
+  if (item.event_time) {
+    parts.push(item.event_time.slice(0, 5));
+  }
+  return parts.join(" · ");
+};
+
 const renderEntries = (items) => {
   if (!items.length) {
     entriesEl.innerHTML =
@@ -39,12 +55,21 @@ const renderEntries = (items) => {
   entriesEl.innerHTML = items
     .map((item) => {
       const media = renderMedia(item);
+      const noiseLine = item.noise_type
+        ? `<p class="entry__meta">Lärmtyp: ${escapeHtml(item.noise_type)}</p>`
+        : "";
+      const eventLine =
+        item.event_date || item.event_time
+          ? `<p class="entry__meta">Zeitpunkt: ${formatEventDateTime(item)}</p>`
+          : "";
       return `
       <article class="entry">
         <div>
           <h3>${escapeHtml(item.neighbor)}</h3>
           <p class="entry__meta">${formatDateTime(item.created_at)}</p>
         </div>
+        ${noiseLine}
+        ${eventLine}
         <p>${escapeHtml(item.description)}</p>
         ${media}
       </article>
@@ -217,6 +242,9 @@ form.addEventListener("submit", async (event) => {
   const neighbor = formData.get("neighbor").trim();
   const email = formData.get("email").trim();
   const description = formData.get("description").trim();
+  const noiseType = formData.get("noise_type").trim();
+  const eventDate = formData.get("event_date");
+  const eventTime = formData.get("event_time");
   if (!neighbor || !description) {
     statusEl.textContent = "Bitte alle Pflichtfelder ausfüllen.";
     return;
@@ -238,6 +266,9 @@ form.addEventListener("submit", async (event) => {
         neighbor,
         email,
         description,
+        noise_type: noiseType || null,
+        event_date: eventDate || null,
+        event_time: eventTime || null,
         file_url: uploadedAsset.url,
         file_type: fileType,
       },

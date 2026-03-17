@@ -49,6 +49,29 @@
               ></textarea>
             </label>
             <label>
+              Lärmtyp (optional)
+              <select name="noise_type">
+                <option value="">Bitte auswählen</option>
+                <option value="Bohren">Bohren</option>
+                <option value="Hämmern">Hämmern</option>
+                <option value="Sägen">Sägen</option>
+                <option value="Vibrationen">Vibrationen</option>
+                <option value="Maschinenlärm">Maschinenlärm</option>
+                <option value="Verkehr/Anlieferung">Verkehr/Anlieferung</option>
+                <option value="Sonstiges">Sonstiges</option>
+              </select>
+            </label>
+            <div class="form__row">
+              <label>
+                Datum des Lärms (optional)
+                <input type="date" name="event_date" />
+              </label>
+              <label>
+                Uhrzeit des Lärms (optional)
+                <input type="time" name="event_time" />
+              </label>
+            </div>
+            <label>
               Datei (Video, Foto oder Audio)
               <button type="button" id="upload_widget_opener" class="secondary">
                 Datei auswählen & hochladen
