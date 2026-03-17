@@ -129,6 +129,16 @@ textarea {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.secondary {
+  background: #fff3ea;
+  color: var(--accent);
+  border: 1px solid #f6c9b7;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .primary:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(239, 111, 58, 0.25);

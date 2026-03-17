@@ -50,13 +50,18 @@
             </label>
             <label>
               Datei (Video, Foto oder Audio)
-              <input type="file" name="media" accept="video/*,image/*,audio/*" required />
+              <button type="button" id="upload_widget_opener" class="secondary">
+                Datei auswählen & hochladen
+              </button>
             </label>
+            <p class="helper" id="fileStatus">
+              Hinweis: Bitte Videos auf 30 Sekunden begrenzen.
+            </p>
             <label class="inline">
               <input type="checkbox" name="consent" required />
               Ich bestätige, dass dieses Material echt ist und die Baustelle betrifft.
             </label>
-            <button type="submit" class="primary">Hochladen</button>
+            <button type="submit" class="primary">Eintrag speichern</button>
             <p class="helper" id="uploadStatus"></p>
           </form>
         </div>
@@ -99,6 +104,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
