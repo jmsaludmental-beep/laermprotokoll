@@ -72,6 +72,9 @@ const renderEntries = (items) => {
         ? `<span class="entry__badge">${escapeHtml(item.noise_type)}</span>`
         : "";
 
+      const publicName =
+        item.neighbor || "Anonyme:r Nachbar:in";
+
       const isOwner = userOwnedIds.has(item.id);
       const editButton = isOwner 
         ? `<button class="btn-edit-trigger" style="margin-top: 12px;" onclick="handleEditEntry('${item.id}')">Bearbeiten</button>` 
