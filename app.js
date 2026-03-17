@@ -540,33 +540,37 @@ if (emailConsultaInput) {
   });
 }
 
-entriesEl.addEventListener("click", async (event) => {
-  const button = event.target.closest(".report-button");
-  if (!button) return;
+window.handleReportContent = async (entryId) => {
+  const link = document.querySelector(`[data-card-id="${entryId}"] .report-link`);
+  if (!link) return;
 
-  const entryId = button.dataset.reportId;
-  if (!entryId) return;
+  if (link.textContent === "Gemeldet") return;
 
-  button.disabled = true;
-  button.textContent = "Gemeldet";
+  link.textContent = "...";
+  link.style.pointerEvents = "none";
 
-  const { data, error } = await client.rpc("report_entry", {
-    entry_id: entryId,
-  });
+  try {
+    const { data, error } = await client.rpc("report_entry", {
+      entry_id: entryId,
+    });
 
-  if (error) {
-    button.disabled = false;
-    button.textContent = "Inhalt melden";
+    if (error) throw error;
+
+    link.textContent = "Gemeldet";
+    link.style.color = "var(--ink)";
+    link.style.textDecoration = "none";
+
+    const result = Array.isArray(data) ? data[0] : data;
+    if (result && result.hidden) {
+      const card = document.querySelector(`[data-card-id="${entryId}"]`);
+      if (card) card.style.opacity = "0.5";
+    }
+  } catch (error) {
     console.error(error);
-    return;
+    link.textContent = "Inhalt melden";
+    link.style.pointerEvents = "auto";
   }
-
-  const result = Array.isArray(data) ? data[0] : data;
-  if (result && result.hidden) {
-    const card = button.closest(".entry");
-    if (card) card.remove();
-  }
-});
+};
 
 if (btnCookieAccept) {
   btnCookieAccept.addEventListener("click", () => {
