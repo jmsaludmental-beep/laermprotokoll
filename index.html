@@ -32,13 +32,16 @@
           <h2>Beleg hochladen</h2>
           <form id="uploadForm" class="form">
             <label>
-              Nachbar:in (Name oder Kennung)
-              <input type="text" name="neighbor" required placeholder="z. B. 3. OG · Marta" />
+              Nachbar:in (Kennung oder anonym)
+              <input type="text" name="neighbor" placeholder="z. B. 3. OG · Pseudonym" />
             </label>
             <label>
               E-Mail (optional)
               <input type="email" name="email" placeholder="marta@email.com" />
             </label>
+            <p class="helper">
+              Wir zeigen E-Mails nicht öffentlich. Nur für Rückfragen, falls nötig.
+            </p>
             <label>
               Kurze Beschreibung
               <textarea
@@ -93,11 +96,26 @@
       <section class="board">
         <div class="board__header">
           <div>
+            <div class="stats-bar">
+              <div class="stat-item">
+                <span id="totalReports" class="stat-value">0</span>
+                <span class="stat-label">Belege gesamt</span>
+              </div>
+            </div>
             <h2>Neueste Belege</h2>
-            <p>Sortiert nach Datum und Uhrzeit der Uploads.</p>
+            <p>Echte Dokumentation der Nachbarschaft.</p>
           </div>
           <div class="filters">
-            <input id="searchInput" type="search" placeholder="Suche nach Nachbar:in oder Beschreibung" />
+            <select id="noiseFilter">
+              <option value="">Alle Lärmtypen</option>
+              <option value="Bohren">Bohren</option>
+              <option value="Hämmern">Hämmern</option>
+              <option value="Sägen">Sägen</option>
+              <option value="Vibrationen">Vibrationen</option>
+              <option value="Maschinenlärm">Maschinenlärm</option>
+              <option value="Verkehr/Anlieferung">Verkehr/Anlieferung</option>
+              <option value="Sonstiges">Sonstiges</option>
+            </select>
           </div>
         </div>
 
@@ -113,10 +131,39 @@
           </p>
         </div>
         <div>
+          <h3>Zeugen & Beweiswert</h3>
+          <p>
+            Anonyme Meldungen sind möglich, haben aber vor Gericht geringeren Wert.
+            Für eine festsitzende Mietminderung sind Zeugen mit Namen oft notwendig.
+          </p>
+        </div>
+        <div>
           <h3>Datenschutz</h3>
           <p>
             Bitte keine Gesichter Dritter aufnehmen. Wenn nötig, nutze eine Kennung
             statt vollständigem Namen.
+          </p>
+          <p>
+            E-Mails werden nicht öffentlich angezeigt und nur für Rückfragen verwendet,
+            falls erforderlich.
+          </p>
+        </div>
+      </section>
+
+      <section class="info">
+        <div>
+          <h3>Impressum</h3>
+          <p>Angaben gemäß § 5 TMG</p>
+          <p>Verantwortlich: Jose Munoz</p>
+          <p>Anschrift: Stresemannstr. 118, 22769 Hamburg</p>
+          <p>Kontakt: sternbruecke.laerm@gmail.com</p>
+        </div>
+        <div>
+          <h3>Haftung</h3>
+          <p>
+            Trotz sorgfältiger Prüfung übernehmen wir keine Haftung für Inhalte externer
+            Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber
+            verantwortlich.
           </p>
         </div>
       </section>
