@@ -923,7 +923,7 @@ select:focus {
 /* ─── Top Admin/Home Link ─────────────────────────────────────────────────── */
 .admin-link-top {
   position: absolute;
-  top: 0;
+  top: 32px;
   right: -60px;
   background: white;
   color: var(--muted);
