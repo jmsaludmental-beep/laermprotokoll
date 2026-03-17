@@ -852,9 +852,78 @@ select:focus {
   }
 }
 
+/* ─── Media Modal ─────────────────────────────────────────────────────────── */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 8, 7, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content-wrapper {
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+#modal-media-container img,
+#modal-media-container video {
+  max-width: 100%;
+  max-height: 85vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  display: block;
+}
+
+.modal-close {
+  position: absolute;
+  top: 32px;
+  right: 42px;
+  color: white;
+  font-size: 48px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: var(--transition);
+  line-height: 1;
+  z-index: 10001;
+}
+
+.modal-close:hover {
+  color: var(--accent);
+  transform: rotate(90deg);
+}
+
+@media (max-width: 768px) {
+  .modal {
+    padding: 20px;
+  }
+  .modal-close {
+    top: 20px;
+    right: 25px;
+    font-size: 40px;
+  }
+}
+
 /* ─── Print styles ─────────────────────────────────────────────────────────── */
 @media print {
-  header, footer, .hero, .board, .info, .search-box, button, .report-button, .cookie-banner, .admin-link-top {
+  header, footer, .hero, .board, .info, .search-box, button, .report-button, .cookie-banner, .admin-link-top, .modal {
     display: none !important;
   }
   body { background: white; color: black; margin: 0; padding: 0; }

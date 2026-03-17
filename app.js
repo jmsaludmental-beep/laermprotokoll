@@ -27,6 +27,11 @@ const listaResultados = document.getElementById("lista-resultados");
 const cookieBanner = document.getElementById("cookie-banner");
 const btnCookieAccept = document.getElementById("btn-cookie-accept");
 
+// Media Modal Elements
+const mediaModal = document.getElementById("media-modal");
+const modalContainer = document.getElementById("modal-media-container");
+const modalClose = document.querySelector(".modal-close");
+
 // ─── State & Config ───────────────────────────────────────────────────────────
 let cachedEntries = [];
 let uploadedAsset = null;
@@ -487,3 +492,47 @@ const checkInitialSession = async () => {
 
 checkInitialSession();
 checkCookieConsent();
+
+// ─── Modal Functions ─────────────────────────────────────────────────────────
+
+const openModal = (url, type) => {
+  if (!mediaModal || !modalContainer) return;
+  
+  modalContainer.innerHTML = type === "video" 
+    ? `<video src="${url}" controls autoplay loop></video>` 
+    : `<img src="${url}" alt="Vollbild" />`;
+    
+  mediaModal.style.display = "flex";
+  document.body.style.overflow = "hidden"; // Prevent scroll
+};
+
+const closeModal = () => {
+  if (!mediaModal) return;
+  mediaModal.style.display = "none";
+  modalContainer.innerHTML = "";
+  document.body.style.overflow = ""; // Restore scroll
+};
+
+// Event Delegation for Media Clicks
+document.addEventListener("click", (e) => {
+  const mediaTrigger = e.target.closest(".entry__media[data-full-url]");
+  if (mediaTrigger) {
+    const url = mediaTrigger.dataset.fullUrl;
+    const type = mediaTrigger.dataset.type;
+    openModal(url, type);
+  }
+});
+
+if (modalClose) {
+  modalClose.addEventListener("click", closeModal);
+}
+
+if (mediaModal) {
+  mediaModal.addEventListener("click", (e) => {
+    if (e.target === mediaModal) closeModal();
+  });
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModal();
+});

@@ -36,22 +36,18 @@ const renderMedia = (item) => {
 
   if (type.startsWith("image/")) {
     return `
-      <div class="entry__media">
-        <a href="${url}" target="_blank" rel="noopener" title="Vollbild anzeigen">
-          <img src="${url}" alt="Hochgeladener Beleg" loading="lazy" />
-        </a>
+      <div class="entry__media" data-full-url="${url}" data-type="image">
+        <img src="${url}" alt="Hochgeladener Beleg" loading="lazy" />
       </div>`;
   }
   if (type.startsWith("video/")) {
     return `
-      <div class="entry__media">
-        <a href="${url}" target="_blank" rel="noopener" title="Originalvideo ansehen">
-          <video src="${url}" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
-        </a>
+      <div class="entry__media" data-full-url="${url}" data-type="video">
+        <video src="${url}" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
       </div>`;
   }
   if (type.startsWith("audio/")) {
     return `<div class="entry__media"><audio src="${url}" controls></audio></div>`;
   }
-  return `<a href="${url}" target="_blank" rel="noopener" class="footer__link">Datei ansehen</a>`;
+  return `<a href="${url}" target="_blank" rel="noopener" class="footer__link">Datei ansehen ↗</a>`;
 };
