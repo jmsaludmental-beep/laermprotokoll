@@ -72,6 +72,9 @@ const renderEntries = (items) => {
         ? `<span class="entry__badge">${escapeHtml(item.noise_type)}</span>`
         : "";
 
+      const publicName =
+        item.neighbor || "Anonyme:r Nachbar:in";
+
       const isOwner = userOwnedIds.has(item.id);
       const editButton = isOwner 
         ? `<button class="btn-edit-pencil" title="Bearbeiten" onclick="handleEditEntry('${item.id}')">✎</button>` 
@@ -168,8 +171,8 @@ window.cancelEdit = (id, originalText) => {
   const container = card.querySelector(".desc-container");
   container.innerHTML = `<p class="desc">${originalText}</p>`;
   
-  const triggerBtn = card.querySelector(".btn-edit-trigger");
-  const reportBtn = card.querySelector(".report-button");
+  const triggerBtn = card.querySelector(".btn-edit-pencil");
+  const reportBtn = card.querySelector(".report-link");
   if (triggerBtn) triggerBtn.style.display = "block";
   if (reportBtn) reportBtn.style.display = "block";
 };
