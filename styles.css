@@ -390,6 +390,19 @@ select:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.entry__media:hover {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.entry__media a {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .entry__media img,
@@ -398,6 +411,12 @@ select:focus {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: var(--transition);
+}
+
+.entry__media:hover img,
+.entry__media:hover video {
+  opacity: 0.9;
 }
 
 .entry__media audio {
